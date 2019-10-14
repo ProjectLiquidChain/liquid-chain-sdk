@@ -8,7 +8,7 @@ clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (chec
 ### Build Tool
 build tools to support C, C++ language
 ```bash
-brew install ninja-build && ./build-c.sh
+brew install ninja && ./build-c.sh
 ```
 build tool to support rust langguage
 ```bash
@@ -31,7 +31,7 @@ cargo build --target wasm32-wasi
 ### create first project in rust language
 create new project
 ```bash
-cargo new --lib my_project && cd my_project
+cargo new --lib <my_project> && cd <my_project>
 ```
 Add the following configurations to Cargo.toml
 ```toml
