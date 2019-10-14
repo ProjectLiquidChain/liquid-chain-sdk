@@ -14,6 +14,10 @@ build tool to support rust langguage
 ```bash
 ./build-rust.sh
 ```
+build tool to support check rule vertex vm
+```bash
+cd checker && ./build.sh
+```
 ### compile to WebAssembly
 C language
 ```bash

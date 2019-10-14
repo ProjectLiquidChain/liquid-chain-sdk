@@ -7,7 +7,6 @@ import (
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionWasi = []string{"allow_mem"}
 var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get"}
 var AllowImportWasi = "wasi_unstable"
 
