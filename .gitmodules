@@ -1,0 +1,3 @@
+[submodule "wasi-sdk"]
+	path = wasi-sdk
+	url = https://github.com/QuoineFinancial/wasi-sdk
