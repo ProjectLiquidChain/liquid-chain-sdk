@@ -31,7 +31,6 @@ rust language
 ```bash
 cargo build --target wasm32-wasi
 ```
-### Create first project in C,C++ language
 ### Create first project in rust language
 create new project
 ```bash
@@ -45,7 +44,19 @@ crate-type =["cdylib"]
 [profile.release]
 lto = true #link time optimization to shrink wasm size
 ```
+example code in lib.rs :
+```rust
+#[no_mangle]
+pub extern fn add(x: u32, y: u32) -> u32 {
+    return x + y
+}
+```
 compile the project to WebAssembly
 ```bash
 cargo build --target wasm32-wasi release
 ```
+check rule WebAssembly file
+```bash
+./checker <path to file wasm>
+```
+### Create first project in C,C++ language
