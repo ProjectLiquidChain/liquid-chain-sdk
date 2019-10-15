@@ -2,7 +2,7 @@
 ## Install vertex-sdk from source code
 ### Clone project
 ```bash
-    git clone https://github.com/QuoineFinancial/vertex-sdk
+git clone https://github.com/QuoineFinancial/vertex-sdk
 ```
 clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (checkout to versions)
 ### Build Tool

@@ -1,2 +1,2 @@
 cd wasi-sdk
-make clean & make build
+make clean && make build
