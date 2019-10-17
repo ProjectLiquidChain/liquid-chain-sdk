@@ -22,6 +22,29 @@ usage for vertex tools
 ```bash
 vertex-cdt --help
 ```
+```bash
+NAME:
+   smart contract development CLI - vertex-cdt [language option] compile [file]
+
+USAGE:
+   vertex-cdt [global options] command [command options] [arguments...]
+
+VERSION:
+   0.0.1
+
+AUTHOR:
+   vertex team
+
+COMMANDS:
+   c++, c++  compile c++ language file
+   c, c      compile c language file
+   rust, r   compile rust language file
+   help, h   Shows a list of commands or help for one command
+
+GLOBAL OPTIONS:
+   --help, -h     show help
+   --version, -v  print the version
+```
 ### Compile to WebAssembly
 C language
 ```bash
