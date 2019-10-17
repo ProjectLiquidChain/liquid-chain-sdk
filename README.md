@@ -33,7 +33,7 @@ vertex-cdt c++ <file .c>
 ```
 rust language
 ```bash
-cargo build --target wasm32-wasi
+vertex-cdt rust <path folder project>
 ```
 ### Create first project in rust language
 create new project

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/urfave/cli"
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
@@ -26,7 +27,7 @@ func commands() {
 			Aliases: []string{"c++"},
 			Usage:   "compile c++ language file",
 			Action: func(c *cli.Context) {
-				compile(c.Args().First())
+				compileCplus(c.Args().First())
 				if checkImportFunction("contract.wasm") {
 					fmt.Println("compile completed!")
 				} else {
@@ -39,11 +40,28 @@ func commands() {
 			Aliases: []string{"c"},
 			Usage:   "compile c language file",
 			Action: func(c *cli.Context) {
-				compile(c.Args().First())
+				compileC(c.Args().First())
 				if checkImportFunction("contract.wasm") {
 					fmt.Println("compile completed!")
 				} else {
 					deleteFile("contract.wasm") // ? remove file .wasm
+				}
+			},
+		},
+		{
+			Name:    "rust",
+			Aliases: []string{"r"},
+			Usage:   "compile rust language file",
+			Action: func(c *cli.Context) {
+				file := strings.Split(c.Args().First(), "/")
+				if file[len(file)-1] == "" {
+					file[len(file)-1] = file[len(file)-2]
+				}
+				compileRust(c.Args().First())
+				if checkImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
+					fmt.Println("compile completed!")
+				} else {
+					deleteFolder(c.Args().First() + "/target") // ? remove file .wasm
 				}
 			},
 		},
@@ -57,7 +75,7 @@ func checkFunction(fun string) bool {
 	}
 	return false
 }
-func compile(file string) {
+func compileCplus(file string) {
 	cmd := exec.Command("/opt/wasi-sdk/bin/clang++", file, "-o", "contract.wasm", "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
@@ -65,9 +83,32 @@ func compile(file string) {
 	}
 	fmt.Print(string(out))
 }
+func compileC(file string) {
+	cmd := exec.Command("/opt/wasi-sdk/bin/clang", file, "-o", "contract.wasm", "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Print(string(out))
+}
+func compileRust(folder string) {
+	cmd := exec.Command("cargo", "build", "--manifest-path", folder+"/Cargo.toml", "--target", "wasm32-wasi")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Print(string(out))
+}
 func deleteFile(file string) {
-	fmt.Println(file)
 	cmd := exec.Command("rm", file)
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Print(string(out))
+}
+func deleteFolder(folder string) {
+	cmd := exec.Command("rm", "-rf", folder)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		fmt.Println(err)
@@ -76,7 +117,7 @@ func deleteFile(file string) {
 }
 func checkImportFunction(file string) bool {
 	bytes, _ := wasm.ReadBytes(file)
-
+	var check = true
 	compiled, err := wasm.Compile(bytes)
 	if err != nil {
 		panic(err)
@@ -86,7 +127,8 @@ func checkImportFunction(file string) bool {
 		if fn.Namespace != AllowImportWasi {
 			if fn.Namespace == "env" {
 				if !checkFunction(fn.Name) {
-					return false
+					fmt.Println("error: function " + fn.Name + " not support!")
+					check = false
 				}
 			}
 		} else {
@@ -94,7 +136,7 @@ func checkImportFunction(file string) bool {
 		}
 	}
 	fmt.Println("check done!")
-	return true
+	return check
 }
 func main() {
 	info()
