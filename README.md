@@ -83,3 +83,18 @@ compile the project to WebAssembly
 vertex-cdt rust <my_project>
 ```
 ### Create first project in C,C++ language
+code demo in c++ demo.cpp
+```c++
+extern "C" int sum(int num1, int num2){
+   int num3 = num1+num2;
+   return num3;
+}
+int main(){
+   int x = sum(1,99);
+   return 0;
+}
+```
+compile demo.cpp
+```bash
+vertex-cdt c++ demo.cpp
+```
