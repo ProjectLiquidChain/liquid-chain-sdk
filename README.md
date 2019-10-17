@@ -14,18 +14,22 @@ build tool to support rust langguage
 ```bash
 ./build-rust.sh
 ```
-build tool to support check rule vertex vm
+build vertex tool
 ```bash
-cd checker && ./build.sh
+cd vertex-cdt && ./build.sh
+```
+usage for vertex tools
+```bash
+vertex-cdt --help
 ```
 ### Compile to WebAssembly
 C language
 ```bash
-clang -Wl,--allow-undefined,--no-entry,--export=<export function> -O3 -s -o <file .wasm> <file .c>
+vertex-cdt c <file .c>
 ```
  C++ language
 ```bash
-clang++ -Wl,--allow-undefined,--no-entry,--export=<export function> -O3 -s -o <file .wasm> <file .c>
+vertex-cdt c++ <file .c>
 ```
 rust language
 ```bash
