@@ -57,10 +57,6 @@ pub extern fn add(x: u32, y: u32) -> u32 {
 ```
 compile the project to WebAssembly
 ```bash
-cargo build --target wasm32-wasi release
-```
-check rule WebAssembly file
-```bash
-./checker <path to file wasm>
+vertex-cdt rust <my_project>
 ```
 ### Create first project in C,C++ language
