@@ -3,16 +3,13 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"strings"
 
 	tool "github.com/QuoineFinancial/vertex-sdk/vertex-cdt/tools"
+	utils "github.com/QuoineFinancial/vertex-sdk/vertex-cdt/utils"
 	"github.com/urfave/cli"
-	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get"}
-var AllowImportWasi = "wasi_unstable"
 var app = cli.NewApp()
 
 func info() {
@@ -30,10 +27,10 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
 				result := compile.Clang()
-				if checkImportFunction(result) {
+				if tool.CheckImportFunction(result) {
 					fmt.Println("compile completed!")
 				} else {
-					deleteFile(result) // ? remove file .wasm
+					utils.DeleteFile(result) // ? remove file .wasm
 				}
 			},
 		},
@@ -44,10 +41,10 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
 				result := compile.Clang()
-				if checkImportFunction(result) {
+				if tool.CheckImportFunction(result) {
 					fmt.Println("compile completed!")
 				} else {
-					deleteFile(result) // ? remove file .wasm
+					utils.DeleteFile(result) // ? remove file .wasm
 				}
 			},
 		},
@@ -62,61 +59,14 @@ func commands() {
 				}
 				compile := tool.Compile{c.Args().First(), "rust"}
 				compile.Rust()
-				if checkImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
+				if tool.CheckImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
 					fmt.Println("compile completed!")
 				} else {
-					deleteFolder(c.Args().First() + "/target") // ? remove file .wasm
+					utils.DeleteFolder(c.Args().First() + "/target") // ? remove file .wasm
 				}
 			},
 		},
 	}
-}
-func checkFunction(fun string) bool {
-	for _, cfun := range AllowFunctionEnv {
-		if cfun == fun {
-			return true
-		}
-	}
-	return false
-}
-func deleteFile(file string) {
-	cmd := exec.Command("rm", file)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Print(string(out))
-}
-func deleteFolder(folder string) {
-	cmd := exec.Command("rm", "-rf", folder)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Print(string(out))
-}
-func checkImportFunction(file string) bool {
-	bytes, _ := wasm.ReadBytes(file)
-	var check = true
-	compiled, err := wasm.Compile(bytes)
-	if err != nil {
-		panic(err)
-	}
-	importFunction := compiled.Imports
-	for _, fn := range importFunction {
-		if fn.Namespace != AllowImportWasi {
-			if fn.Namespace == "env" {
-				if !checkFunction(fn.Name) {
-					fmt.Println("error: function " + fn.Name + " not support!")
-					check = false
-				}
-			}
-		} else {
-			fmt.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
-		}
-	}
-	fmt.Println("check done!")
-	return check
 }
 func main() {
 	info()
