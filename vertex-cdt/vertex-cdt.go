@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	tool "github.com/QuoineFinancial/vertex-sdk/vertex-cdt/tools"
 	"github.com/urfave/cli"
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -27,7 +28,8 @@ func commands() {
 			Aliases: []string{"c++"},
 			Usage:   "compile c++ language file",
 			Action: func(c *cli.Context) {
-				result := compileCplus(c.Args().First())
+				compile := tool.Compile{c.Args().First(), "c++"}
+				result := compile.Clang()
 				if checkImportFunction(result) {
 					fmt.Println("compile completed!")
 				} else {
@@ -40,7 +42,8 @@ func commands() {
 			Aliases: []string{"c"},
 			Usage:   "compile c language file",
 			Action: func(c *cli.Context) {
-				result := compileC(c.Args().First())
+				compile := tool.Compile{c.Args().First(), "c"}
+				result := compile.Clang()
 				if checkImportFunction(result) {
 					fmt.Println("compile completed!")
 				} else {
@@ -57,7 +60,8 @@ func commands() {
 				if file[len(file)-1] == "" {
 					file[len(file)-1] = file[len(file)-2]
 				}
-				compileRust(c.Args().First())
+				compile := tool.Compile{c.Args().First(), "rust"}
+				compile.Rust()
 				if checkImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
 					fmt.Println("compile completed!")
 				} else {
@@ -74,38 +78,6 @@ func checkFunction(fun string) bool {
 		}
 	}
 	return false
-}
-func compileCplus(file string) string {
-	name := strings.Split(file, "/")
-	last := name[len(name)-1]
-	wasmFile := last[:len(last)-4] + ".wasm"
-	cmd := exec.Command("/opt/wasi-sdk/bin/clang++", file, "-o", wasmFile, "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Print(string(out))
-	return wasmFile
-}
-func compileC(file string) string {
-	name := strings.Split(file, "/")
-	last := name[len(name)-1]
-	wasmFile := last[:len(last)-2] + ".wasm"
-	cmd := exec.Command("/opt/wasi-sdk/bin/clang", file, "-o", wasmFile, "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Print(string(out))
-	return wasmFile
-}
-func compileRust(folder string) {
-	cmd := exec.Command("cargo", "build", "--manifest-path", folder+"/Cargo.toml", "--target", "wasm32-wasi")
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Print(string(out))
 }
 func deleteFile(file string) {
 	cmd := exec.Command("rm", file)
