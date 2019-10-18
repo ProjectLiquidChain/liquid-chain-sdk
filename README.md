@@ -52,7 +52,7 @@ vertex-cdt c <file .c>
 ```
  C++ language
 ```bash
-vertex-cdt c++ <file .c>
+vertex-cdt c++ <file .cpp>
 ```
 rust language
 ```bash
