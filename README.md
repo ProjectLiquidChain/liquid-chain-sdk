@@ -6,15 +6,21 @@ git clone https://github.com/QuoineFinancial/vertex-sdk
 ```
 clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (checkout to versions)
 ### Build Tool
+#### MacOS
 build tools to support C, C++ language
 ```bash
 brew install ninja && ./build-c.sh
+```
+```bash
+./build-c2ffi-mac.sh
 ```
 build tool to support rust langguage
 ```bash
 ./build-rust.sh
 ```
-build vertex tool
+#### Ubuntu
+#### windown
+build vertex tool (require install golang)
 ```bash
 cd vertex-cdt && ./build.sh
 ```
