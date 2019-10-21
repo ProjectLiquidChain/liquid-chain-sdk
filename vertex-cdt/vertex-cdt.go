@@ -31,7 +31,7 @@ func commands() {
 					tool.ABIgen(c.Args().First(), "c++")
 					fmt.Println("compile completed!")
 				} else {
-					utils.DeleteFile(result) // ? remove file .wasm
+					utils.DeleteFile(result) // remove file .wasm
 				}
 			},
 		},
@@ -46,7 +46,7 @@ func commands() {
 					tool.ABIgen(c.Args().First(), "c")
 					fmt.Println("compile completed!")
 				} else {
-					utils.DeleteFile(result) // ? remove file .wasm
+					utils.DeleteFile(result) //remove file .wasm
 				}
 			},
 		},
