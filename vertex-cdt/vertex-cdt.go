@@ -28,6 +28,7 @@ func commands() {
 				compile := tool.Compile{c.Args().First(), "c++"}
 				result := compile.Clang()
 				if tool.CheckImportFunction(result) {
+					tool.ABIgen(c.Args().First(), "c++")
 					fmt.Println("compile completed!")
 				} else {
 					utils.DeleteFile(result) // ? remove file .wasm
@@ -42,6 +43,7 @@ func commands() {
 				compile := tool.Compile{c.Args().First(), "c"}
 				result := compile.Clang()
 				if tool.CheckImportFunction(result) {
+					tool.ABIgen(c.Args().First(), "c")
 					fmt.Println("compile completed!")
 				} else {
 					utils.DeleteFile(result) // ? remove file .wasm
