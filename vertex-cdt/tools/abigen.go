@@ -2,11 +2,13 @@ package tools
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"os/exec"
 	"strings"
 )
+
+var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32", "float64", "address"}
 
 type Parameter struct {
 	IsArray bool   `json:"is_array"`
@@ -26,18 +28,20 @@ type Ctype struct {
 }
 type Cparam struct {
 	Tag  string `json:"tag"`
+	Name string `json:"name"`
 	Type Ctype  `json:"type"`
 }
 type CFunction struct {
 	Name       string   `json:"name"`
 	Parameters []Cparam `json:"parameters"`
+	Location   string   `json:"location"`
 }
 type Type struct {
 	Tag  string `json:"tag"`
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string) {
+func ABIgen(file string, language string) string {
 	names := strings.Split(file, "/")
 	last := names[len(names)-1]
 	var nameFile string
@@ -47,13 +51,23 @@ func ABIgen(file string, language string) {
 		nameFile = last[:len(last)-2]
 	}
 	jsonFile := nameFile + ".json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file)
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/opt/wasi-sdk/share/wasi-sysroot/include")
 	out, err := cmd.CombinedOutput()
+	// log.Println(string(out))
 	if err != nil {
-		fmt.Println(err)
+		log.Println(string(out))
+		log.Fatalln(err)
 	}
 	parse(jsonFile)
-	fmt.Print(string(out))
+	return jsonFile
+}
+func checkAllowType(atype string) bool {
+	for _, ctype := range allowType {
+		if ctype == atype {
+			return true
+		}
+	}
+	return false
 }
 func parse(file string) {
 	jsonFile, _ := ioutil.ReadFile(file)
@@ -64,12 +78,25 @@ func parse(file string) {
 	functions := []Function{}
 	for i := 0; i < len(data); i++ {
 		params := []Parameter{}
-		fmt.Println(data[i])
 		for j := 0; j < len(data[i].Parameters); j++ {
-			param := Parameter{false, data[i].Parameters[j].Type.Tag[1:]}
+			param := Parameter{false, data[i].Parameters[j].Type.Tag}
 			if data[i].Parameters[j].Type.Tag[1:] == "array" {
 				param.IsArray = true
-				param.Type = data[i].Parameters[j].Type.Type.Tag[1:]
+				param.Type = data[i].Parameters[j].Type.Type.Tag
+				if string(data[i].Parameters[j].Type.Type.Tag[0]) == ":" {
+					param.Type = param.Type[1:]
+				} else {
+					param.Type = data[i].Parameters[j].Type.Type.Tag[:len(param.Type)-2]
+				}
+			} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
+				param.IsArray = false
+				param.Type = data[i].Parameters[j].Type.Tag[1:]
+			} else {
+				param.IsArray = false
+				param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+			}
+			if !checkAllowType(param.Type) {
+				log.Println(data[i].Location, "variable "+data[i].Parameters[j].Name, "warning: type "+param.Type+" not support!")
 			}
 			params = append(params, param)
 		}
@@ -77,8 +104,9 @@ func parse(file string) {
 		functions = append(functions, function)
 	}
 	result.Functions = functions
-	fmt.Println(result)
 	resultJson, _ := json.Marshal(result)
 	err := ioutil.WriteFile(file, resultJson, 0644)
-	fmt.Printf("%+v", err)
+	if err != nil {
+		log.Println(err)
+	}
 }

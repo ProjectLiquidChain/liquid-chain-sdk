@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -27,10 +27,11 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
 				result := compile.Clang()
+				abiFile := tool.ABIgen(c.Args().First(), "c++")
 				if tool.CheckImportFunction(result) {
-					tool.ABIgen(c.Args().First(), "c++")
-					fmt.Println("compile completed!")
+					log.Println("compile completed!")
 				} else {
+					utils.DeleteFile(abiFile)
 					utils.DeleteFile(result) // remove file .wasm
 				}
 			},
@@ -42,10 +43,11 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
 				result := compile.Clang()
+				abiFile := tool.ABIgen(c.Args().First(), "c")
 				if tool.CheckImportFunction(result) {
-					tool.ABIgen(c.Args().First(), "c")
-					fmt.Println("compile completed!")
+					log.Println("compile completed!")
 				} else {
+					utils.DeleteFile(abiFile)
 					utils.DeleteFile(result) //remove file .wasm
 				}
 			},
@@ -62,7 +64,7 @@ func commands() {
 				compile := tool.Compile{c.Args().First(), "rust"}
 				compile.Rust()
 				if tool.CheckImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
-					fmt.Println("compile completed!")
+					log.Println("compile completed!")
 				} else {
 					utils.DeleteFolder(c.Args().First() + "/target") // ? remove file .wasm
 				}
@@ -75,6 +77,6 @@ func main() {
 	commands()
 	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalln(err)
 	}
 }

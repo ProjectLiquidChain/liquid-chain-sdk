@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"fmt"
+	"log"
 	"os/exec"
 	"strings"
 )
@@ -26,16 +26,16 @@ func (c *Compile) Clang() string {
 	cmd := exec.Command(tool, c.File, "-o", wasmFile, "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(string(out))
+		log.Fatal(err)
 	}
-	fmt.Print(string(out))
 	return wasmFile
 }
 func (c *Compile) Rust() {
 	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", "--target", "wasm32-wasi")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(err)
+		log.Fatal(err)
 	}
-	fmt.Print(string(out))
+	log.Println(string(out))
 }

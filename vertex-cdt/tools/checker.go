@@ -1,7 +1,7 @@
 package tools
 
 import (
-	"fmt"
+	"log"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
@@ -23,21 +23,21 @@ func CheckImportFunction(file string) bool {
 	var check = true
 	compiled, err := wasm.Compile(bytes)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	importFunction := compiled.Imports
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
 			if fn.Namespace == "env" {
 				if !checkFunction(fn.Name) {
-					fmt.Println("error: function " + fn.Name + " not support!")
+					log.Println("error: function " + fn.Name + " not support!")
 					check = false
 				}
 			}
 		} else {
-			fmt.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
+			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
 		}
 	}
-	fmt.Println("check done!")
+	log.Println("check done!")
 	return check
 }
