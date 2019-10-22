@@ -13,23 +13,28 @@ type Parameter struct {
 	Type    string `json:"type"`
 }
 type Function struct {
-	Name       string      `json:name`
-	Parameters []Parameter `json:parameters`
+	Name       string      `json:"name"`
+	Parameters []Parameter `json:"parameters"`
 }
 type ABI struct {
-	Version   string     `json:version`
-	Functions []Function `json:functions`
+	Version   string     `json:"version"`
+	Functions []Function `json:"functions"`
 }
 type Ctype struct {
-	Tag string `json:tag`
+	Tag  string `json:"tag"`
+	Type Type   `json:"type"`
 }
 type Cparam struct {
-	Tag  string `json:tag`
-	Type Ctype  `json:type`
+	Tag  string `json:"tag"`
+	Type Ctype  `json:"type"`
 }
 type CFunction struct {
-	Name       string   `json:name`
-	Parameters []Cparam `json:parameters`
+	Name       string   `json:"name"`
+	Parameters []Cparam `json:"parameters"`
+}
+type Type struct {
+	Tag  string `json:"tag"`
+	Type string `json:"type"`
 }
 
 func ABIgen(file string, language string) {
@@ -62,6 +67,10 @@ func parse(file string) {
 		fmt.Println(data[i])
 		for j := 0; j < len(data[i].Parameters); j++ {
 			param := Parameter{false, data[i].Parameters[j].Type.Tag[1:]}
+			if data[i].Parameters[j].Type.Tag[1:] == "array" {
+				param.IsArray = true
+				param.Type = data[i].Parameters[j].Type.Type.Tag[1:]
+			}
 			params = append(params, param)
 		}
 		function := Function{data[i].Name, params}
