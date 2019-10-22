@@ -41,7 +41,7 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string) string {
+func ABIgen(file string, language string, option string) string {
 	names := strings.Split(file, "/")
 	last := names[len(names)-1]
 	var nameFile string
@@ -51,7 +51,7 @@ func ABIgen(file string, language string) string {
 		nameFile = last[:len(last)-2]
 	}
 	jsonFile := nameFile + ".json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/opt/wasi-sdk/share/wasi-sysroot/include")
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", option)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
 	if err != nil {
