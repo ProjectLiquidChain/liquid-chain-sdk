@@ -27,7 +27,7 @@ func commands() {
 			Flags:   []cli.Flag{cli.StringFlag{Name: "sys-root, s"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
-				result := compile.Clang()
+				result := compile.Clang(c.String("sys-root"))
 				abiFile := tool.ABIgen(c.Args().First(), "c++", c.String("sys-root"))
 				if tool.CheckImportFunction(result) {
 					log.Println("compile completed!")
@@ -44,7 +44,7 @@ func commands() {
 			Flags:   []cli.Flag{cli.StringFlag{Name: "sys-root, s"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
-				result := compile.Clang()
+				result := compile.Clang(c.String("sys-root"))
 				abiFile := tool.ABIgen(c.Args().First(), "c", c.String("sys-root"))
 				if tool.CheckImportFunction(result) {
 					log.Println("compile completed!")

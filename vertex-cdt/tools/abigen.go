@@ -50,8 +50,8 @@ func ABIgen(file string, language string, option string) string {
 	} else if language == "c" {
 		nameFile = last[:len(last)-2]
 	}
-	jsonFile := nameFile + ".json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", option)
+	jsonFile := nameFile + "-abi.json"
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", option+"/include")
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
 	if err != nil {
@@ -84,13 +84,13 @@ func parse(file string) {
 				param.IsArray = true
 				param.Type = data[i].Parameters[j].Type.Type.Tag
 				if string(data[i].Parameters[j].Type.Type.Tag[0]) == ":" {
-					param.Type = param.Type[1:]
+					param.Type = convertType(param.Type[1:])
 				} else {
 					param.Type = data[i].Parameters[j].Type.Type.Tag[:len(param.Type)-2]
 				}
 			} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
 				param.IsArray = false
-				param.Type = data[i].Parameters[j].Type.Tag[1:]
+				param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
 			} else {
 				param.IsArray = false
 				param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
@@ -109,4 +109,13 @@ func parse(file string) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+func convertType(ctype string) string {
+	if ctype == "float" {
+		return "float32"
+	}
+	if ctype == "double" {
+		return "float64"
+	}
+	return ctype
 }

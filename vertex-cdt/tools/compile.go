@@ -11,7 +11,7 @@ type Compile struct {
 	Language string
 }
 
-func (c *Compile) Clang() string {
+func (c *Compile) Clang(option string) string {
 	names := strings.Split(c.File, "/")
 	last := names[len(names)-1]
 	var nameFile, tool string
@@ -23,7 +23,7 @@ func (c *Compile) Clang() string {
 		nameFile = last[:len(last)-2]
 	}
 	wasmFile := nameFile + ".wasm"
-	cmd := exec.Command(tool, c.File, "-o", wasmFile, "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot=/opt/wasi-sdk/share/wasi-sysroot")
+	cmd := exec.Command(tool, c.File, "-o", wasmFile, "--target=wasm32-wasi", "-Wl,--no-entry,--export=main", "--sysroot="+option)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
