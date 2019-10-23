@@ -1,4 +1,4 @@
-brew install llvm
+brew install llvm@9
 cd c2ffi/
 mkdir build
 cd build/
