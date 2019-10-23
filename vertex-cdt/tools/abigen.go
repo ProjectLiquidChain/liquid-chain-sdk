@@ -111,11 +111,26 @@ func parse(file string) {
 	}
 }
 func convertType(ctype string) string {
-	if ctype == "float" {
+	switch ctype {
+	case "float":
 		return "float32"
-	}
-	if ctype == "double" {
+	case "double":
 		return "float64"
+	case "short":
+		return "int16"
+	case "unsigned-short":
+		return "uint16"
+	case "int":
+		return "int32"
+	case "unsigned-int":
+		return "uint32"
+	case "unsigned-long":
+		return "uint32"
+	case "long-long":
+		return "int64"
+	case "unsigned-long-long":
+		return "uint64"
+	default:
+		return ctype
 	}
-	return ctype
 }
