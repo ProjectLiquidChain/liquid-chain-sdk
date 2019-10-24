@@ -30,7 +30,7 @@ func (c *Compile) Clang(option string) string {
 			op += ",--export=" + cfun
 		}
 	}
-	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-nostartfiles", "--target=wasm32-wasi", "-Wl,--no-entry,--allow-undefined,--demangle", "-Wl"+op, "--sysroot=/usr/local/opt/wasi-sdk/share/wasi-sysroot")
+	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-O3", "-nostartfiles", "--target=wasm32-wasi", "-Wl,--no-entry,--allow-undefined,--demangle", "-Wl"+op, "--sysroot=/usr/local/opt/wasi-sdk/share/wasi-sysroot")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
