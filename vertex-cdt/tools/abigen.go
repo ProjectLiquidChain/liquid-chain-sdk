@@ -92,7 +92,7 @@ func parse(file string, exportFunction []string) {
 		}
 		for j := 0; j < len(data[i].Parameters); j++ {
 			param := Parameter{false, data[i].Parameters[j].Type.Tag}
-			if data[i].Parameters[j].Type.Tag[1:] == "array" {
+			if data[i].Parameters[j].Type.Tag[1:] == "array" || data[i].Parameters[j].Type.Tag[1:] == "pointer" {
 				param.IsArray = true
 				param.Type = data[i].Parameters[j].Type.Type.Tag
 				if string(data[i].Parameters[j].Type.Type.Tag[0]) == ":" {
