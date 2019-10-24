@@ -16,10 +16,10 @@ func (c *Compile) Clang(option string) string {
 	last := names[len(names)-1]
 	var nameFile, tool string
 	if c.Language == "c++" {
-		tool = "/opt/wasi-sdk/bin/clang++"
+		tool = "/usr/local/opt/wasi-sdk/bin/clang++"
 		nameFile = last[:len(last)-4]
 	} else if c.Language == "c" {
-		tool = "/opt/wasi-sdk/bin/clang"
+		tool = "/usr/local/opt/wasi-sdk/bin/clang"
 		nameFile = last[:len(last)-2]
 	}
 	wasmFile := nameFile + ".wasm"
