@@ -24,11 +24,11 @@ func commands() {
 			Name:    "c++",
 			Aliases: []string{"c++"},
 			Usage:   "compile c++ language file",
-			Flags:   []cli.Flag{cli.StringFlag{Name: "sys-root, s"}},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
-				result := compile.Clang(c.String("sys-root"))
-				abiFile := tool.ABIgen(c.Args().First(), "c++", c.String("sys-root"))
+				result := compile.Clang(c.String("export-function"))
+				abiFile := tool.ABIgen(c.Args().First(), "c++")
 				if tool.CheckImportFunction(result) {
 					log.Println("compile completed!")
 				} else {
@@ -41,11 +41,11 @@ func commands() {
 			Name:    "c",
 			Aliases: []string{"c"},
 			Usage:   "compile c language file",
-			Flags:   []cli.Flag{cli.StringFlag{Name: "sys-root, s"}},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
-				result := compile.Clang(c.String("sys-root"))
-				abiFile := tool.ABIgen(c.Args().First(), "c", c.String("sys-root"))
+				result := compile.Clang(c.String("export-function"))
+				abiFile := tool.ABIgen(c.Args().First(), "c")
 				if tool.CheckImportFunction(result) {
 					log.Println("compile completed!")
 				} else {
