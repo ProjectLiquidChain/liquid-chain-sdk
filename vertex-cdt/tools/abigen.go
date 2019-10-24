@@ -51,7 +51,7 @@ func ABIgen(file string, language string) string {
 		nameFile = last[:len(last)-2]
 	}
 	jsonFile := nameFile + "-abi.json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/opt/wasi-sdk/share/wasi-sysroot/include")
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include")
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
 	if err != nil {
