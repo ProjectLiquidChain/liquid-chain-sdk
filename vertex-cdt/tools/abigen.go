@@ -41,7 +41,7 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string) string {
+func ABIgen(file string, language string, option string) string {
 	names := strings.Split(file, "/")
 	last := names[len(names)-1]
 	var nameFile string
@@ -58,7 +58,8 @@ func ABIgen(file string, language string) string {
 		log.Println(string(out))
 		log.Fatalln(err)
 	}
-	parse(jsonFile)
+	exportFunction := strings.Split(option, ",")
+	parse(jsonFile, exportFunction)
 	return jsonFile
 }
 func checkAllowType(atype string) bool {
@@ -69,7 +70,15 @@ func checkAllowType(atype string) bool {
 	}
 	return false
 }
-func parse(file string) {
+func checkAllowFunction(function string, allowFunction []string) bool {
+	for _, fn := range allowFunction {
+		if fn == function {
+			return true
+		}
+	}
+	return false
+}
+func parse(file string, exportFunction []string) {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
 	_ = json.Unmarshal([]byte(jsonFile), &data)
@@ -78,6 +87,9 @@ func parse(file string) {
 	functions := []Function{}
 	for i := 0; i < len(data); i++ {
 		params := []Parameter{}
+		if !checkAllowFunction(data[i].Name, exportFunction) {
+			continue
+		}
 		for j := 0; j < len(data[i].Parameters); j++ {
 			param := Parameter{false, data[i].Parameters[j].Type.Tag}
 			if data[i].Parameters[j].Type.Tag[1:] == "array" {
