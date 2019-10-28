@@ -130,6 +130,8 @@ func convertType(ctype string) string {
 		return "float64"
 	case "signed-char":
 		return "int8"
+	case "char":
+		return "int8"
 	case "unsigned-char":
 		return "uint8"
 	case "short":
