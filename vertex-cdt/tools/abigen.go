@@ -19,7 +19,7 @@ type Function struct {
 	Parameters []Parameter `json:"parameters"`
 }
 type ABI struct {
-	Version   string     `json:"version"`
+	Version   int        `json:"version"`
 	Functions []Function `json:"functions"`
 }
 type Ctype struct {
@@ -83,7 +83,7 @@ func parse(file string, exportFunction []string) {
 	data := []CFunction{}
 	_ = json.Unmarshal([]byte(jsonFile), &data)
 	result := ABI{}
-	result.Version = "1.0"
+	result.Version = 1
 	functions := []Function{}
 	for i := 0; i < len(data); i++ {
 		params := []Parameter{}
