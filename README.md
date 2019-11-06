@@ -9,7 +9,7 @@ clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (chec
 #### MacOS
 build tools to support C, C++ language
 ```bash
-brew install ninja && ./build-c.sh
+brew install ninja && brew install cmake && ./build-c.sh
 ```
 ```bash
 ./build-c2ffi-mac.sh
