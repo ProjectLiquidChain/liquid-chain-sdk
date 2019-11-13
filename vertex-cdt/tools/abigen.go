@@ -18,8 +18,17 @@ type Function struct {
 	Name       string      `json:"name"`
 	Parameters []Parameter `json:"parameters"`
 }
+type EventParam struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+}
+type Event struct {
+	Name       string       `json:"name"`
+	Parameters []EventParam `json:"parameters"`
+}
 type ABI struct {
 	Version   int        `json:"version"`
+	Events    []Event    `json:"events"`
 	Functions []Function `json:"functions"`
 }
 type Ctype struct {
@@ -35,6 +44,8 @@ type CFunction struct {
 	Name       string   `json:"name"`
 	Parameters []Cparam `json:"parameters"`
 	Location   string   `json:"location"`
+	ReturnType Type     `json:"return-type"`
+	Tag        string   `json:"tag"`
 }
 type Type struct {
 	Tag  string `json:"tag"`
@@ -78,6 +89,9 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 	}
 	return false
 }
+func checkEvent(event string) bool {
+	return true
+}
 func parse(file string, exportFunction []string) {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
@@ -85,8 +99,30 @@ func parse(file string, exportFunction []string) {
 	result := ABI{}
 	result.Version = 1
 	functions := []Function{}
+	events := []Event{}
 	for i := 0; i < len(data); i++ {
 		params := []Parameter{}
+		event_params := []EventParam{}
+		if data[i].Tag != "function" {
+			continue
+		}
+		if data[i].ReturnType.Tag == "event" {
+			for j := 0; j < len(data[i].Parameters); j++ {
+				param := EventParam{data[i].Parameters[j].Name, data[i].Parameters[j].Type.Tag}
+				if data[i].Parameters[j].Type.Tag[1:] == "array" || data[i].Parameters[j].Type.Tag[1:] == "pointer" {
+					log.Println(data[i].Location, "variable "+data[i].Parameters[j].Name, "warning: type array "+param.Type+" not support in event!")
+					param.Type = ""
+				} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
+					param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
+				} else {
+					param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+				}
+				event_params = append(event_params, param)
+			}
+			event := Event{data[i].Name, event_params}
+			events = append(events, event)
+			continue
+		}
 		if !checkAllowFunction(data[i].Name, exportFunction) {
 			continue
 		}
@@ -116,6 +152,7 @@ func parse(file string, exportFunction []string) {
 		functions = append(functions, function)
 	}
 	result.Functions = functions
+	result.Events = events
 	resultJson, _ := json.Marshal(result)
 	err := ioutil.WriteFile(file, resultJson, 0644)
 	if err != nil {
