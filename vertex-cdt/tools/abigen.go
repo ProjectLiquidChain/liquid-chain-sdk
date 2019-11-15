@@ -148,7 +148,11 @@ func parse(file string, exportFunction []string) []string {
 				param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
 			} else {
 				param.IsArray = false
-				param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+				if data[i].Parameters[j].Type.Tag == "address" {
+					param.Type = "address"
+				} else {
+					param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+				}
 			}
 			if !checkAllowType(param.Type) {
 				log.Println(data[i].Location, "variable "+data[i].Parameters[j].Name, "warning: type "+param.Type+" not support!")
