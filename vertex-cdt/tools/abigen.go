@@ -52,7 +52,7 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string, option string) string {
+func ABIgen(file string, language string, option string) (string, []string) {
 	names := strings.Split(file, "/")
 	last := names[len(names)-1]
 	var nameFile string
@@ -70,8 +70,8 @@ func ABIgen(file string, language string, option string) string {
 		log.Fatalln(err)
 	}
 	exportFunction := strings.Split(option, ",")
-	parse(jsonFile, exportFunction)
-	return jsonFile
+	event_names := parse(jsonFile, exportFunction)
+	return jsonFile, event_names
 }
 func checkAllowType(atype string) bool {
 	for _, ctype := range allowType {
@@ -89,10 +89,11 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 	}
 	return false
 }
-func checkEvent(event string) bool {
-	return true
-}
-func parse(file string, exportFunction []string) {
+
+// func checkEvent(event string) bool {
+// 	return true
+// }
+func parse(file string, exportFunction []string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
 	_ = json.Unmarshal([]byte(jsonFile), &data)
@@ -100,13 +101,15 @@ func parse(file string, exportFunction []string) {
 	result.Version = 1
 	functions := []Function{}
 	events := []Event{}
+	event_names := []string{}
 	for i := 0; i < len(data); i++ {
 		params := []Parameter{}
 		event_params := []EventParam{}
 		if data[i].Tag != "function" {
 			continue
 		}
-		if data[i].ReturnType.Tag == "event" {
+		if data[i].ReturnType.Tag == "Event" {
+			event_names = append(event_names, data[i].Name)
 			for j := 0; j < len(data[i].Parameters); j++ {
 				param := EventParam{data[i].Parameters[j].Name, data[i].Parameters[j].Type.Tag}
 				if data[i].Parameters[j].Type.Tag[1:] == "array" || data[i].Parameters[j].Type.Tag[1:] == "pointer" {
@@ -115,7 +118,11 @@ func parse(file string, exportFunction []string) {
 				} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
 					param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
 				} else {
-					param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+					if data[i].Parameters[j].Type.Tag == "address" {
+						param.Type = "address"
+					} else {
+						param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
+					}
 				}
 				event_params = append(event_params, param)
 			}
@@ -158,7 +165,10 @@ func parse(file string, exportFunction []string) {
 	if err != nil {
 		log.Println(err)
 	}
+	return event_names
 }
+
+// convert from c,c++ type to assembly vertex type
 func convertType(ctype string) string {
 	switch ctype {
 	case "float":

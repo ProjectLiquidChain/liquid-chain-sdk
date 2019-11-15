@@ -28,8 +28,8 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
 				result := compile.Clang(c.String("export-function"))
-				abiFile := tool.ABIgen(c.Args().First(), "c++", c.String("export-function"))
-				if tool.CheckImportFunction(result) {
+				abiFile, event_names := tool.ABIgen(c.Args().First(), "c++", c.String("export-function"))
+				if tool.CheckImportFunction(result, event_names) {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFile(abiFile)
@@ -45,8 +45,8 @@ func commands() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
 				result := compile.Clang(c.String("export-function"))
-				abiFile := tool.ABIgen(c.Args().First(), "c", c.String("export-function"))
-				if tool.CheckImportFunction(result) {
+				abiFile, event_names := tool.ABIgen(c.Args().First(), "c", c.String("export-function"))
+				if tool.CheckImportFunction(result, event_names) {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFile(abiFile)
@@ -65,7 +65,7 @@ func commands() {
 				}
 				compile := tool.Compile{c.Args().First(), "rust"}
 				compile.Rust()
-				if tool.CheckImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
+				if tool.CheckImportFunction(c.Args().First()+"/target/wasm32-wasi/debug/"+file[len(file)-1]+".wasm", []string{}) {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFolder(c.Args().First() + "/target") // ? remove file .wasm
