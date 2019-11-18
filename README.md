@@ -11,9 +11,6 @@ build tools to support C, C++ language
 ```bash
 brew install cmake && ./build-c.sh
 ```
-```bash
-./build-c2ffi-mac.sh
-```
 build tool to support rust langguage
 ```bash
 ./build-rust.sh
