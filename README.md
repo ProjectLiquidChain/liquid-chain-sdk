@@ -2,14 +2,14 @@
 ## Install vertex-sdk from source code
 ### Clone project
 ```bash
-git clone https://github.com/QuoineFinancial/vertex-sdk
+git clone --recursive https://github.com/QuoineFinancial/vertex-sdk
 ```
-clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (checkout to versions)
+extract package wasi-sdk-7.0.zip
 ### Build Tool
 #### MacOS
 build tools to support C, C++ language
 ```bash
-brew install ninja && brew install cmake && ./build-c.sh
+brew install cmake && ./build-c.sh
 ```
 ```bash
 ./build-c2ffi-mac.sh
