@@ -86,18 +86,30 @@ compile the project to WebAssembly
 vertex-cdt rust <my_project>
 ```
 ### Create first project in C,C++ language
-code demo in c++ demo.cpp
-```c++
-extern "C" int sum(int num1, int num2){
+code demo in c demo.c
+```c
+#include <vertex.h>
+Event Add(int num1, int num2)
+Event Call(address x)
+int sum(int num1, int num2){
    int num3 = num1+num2;
+   Add(num1,num2);
    return num3;
 }
-int main(){
-   int x = sum(1,99);
-   return 0;
+```
+compile demo.c
+```bash
+vertex-cdt c demo.c --export-function sum
+```
+code demo in c++ demo.cpp
+```c++
+#include <vertex.h>
+WASI_EXPORT int sum(int num1, int num2){
+   int num3 = num1+num2;
+   return num3;
 }
 ```
 compile demo.cpp
 ```bash
-vertex-cdt c++ demo.cpp
+vertex-cdt c++ demo.cpp --export-function sum
 ```

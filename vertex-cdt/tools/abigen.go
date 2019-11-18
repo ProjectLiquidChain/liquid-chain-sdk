@@ -10,6 +10,7 @@ import (
 
 var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32", "float64", "address"}
 
+// define type of ABI
 type Parameter struct {
 	IsArray bool   `json:"is_array"`
 	Type    string `json:"type"`
@@ -31,6 +32,8 @@ type ABI struct {
 	Events    []Event    `json:"events"`
 	Functions []Function `json:"functions"`
 }
+
+// type of c2ffi output
 type Ctype struct {
 	Tag  string `json:"tag"`
 	Type Type   `json:"type"`
@@ -90,9 +93,6 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 	return false
 }
 
-// func checkEvent(event string) bool {
-// 	return true
-// }
 func parse(file string, exportFunction []string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
