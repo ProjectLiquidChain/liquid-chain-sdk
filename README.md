@@ -2,17 +2,14 @@
 ## Install vertex-sdk from source code
 ### Clone project
 ```bash
-git clone https://github.com/QuoineFinancial/vertex-sdk
+git clone --recursive https://github.com/QuoineFinancial/vertex-sdk
 ```
-clone project wasi-sdk and projects config, llvm-project, wasi-libc in src (checkout to versions)
+extract package wasi-sdk-7.0.zip
 ### Build Tool
 #### MacOS
 build tools to support C, C++ language
 ```bash
-brew install ninja && ./build-c.sh
-```
-```bash
-./build-c2ffi-mac.sh
+brew install cmake && ./build-c.sh
 ```
 build tool to support rust langguage
 ```bash
@@ -54,11 +51,11 @@ GLOBAL OPTIONS:
 ### Compile to WebAssembly
 C language
 ```bash
-vertex-cdt c <file .c>
+vertex-cdt c <file .c> --export-function <functions name>
 ```
  C++ language
 ```bash
-vertex-cdt c++ <file .cpp>
+vertex-cdt c++ <file .cpp> --export-function <functions name>
 ```
 rust language
 ```bash
@@ -89,18 +86,30 @@ compile the project to WebAssembly
 vertex-cdt rust <my_project>
 ```
 ### Create first project in C,C++ language
-code demo in c++ demo.cpp
-```c++
-extern "C" int sum(int num1, int num2){
+code demo in c demo.c
+```c
+#include <vertex.h>
+Event Add(int num1, int num2)
+Event Call(address x)
+int sum(int num1, int num2){
    int num3 = num1+num2;
+   Add(num1,num2);
    return num3;
 }
-int main(){
-   int x = sum(1,99);
-   return 0;
+```
+compile demo.c
+```bash
+vertex-cdt c demo.c --export-function sum
+```
+code demo in c++ demo.cpp
+```c++
+#include <vertex.h>
+WASI_EXPORT int sum(int num1, int num2){
+   int num3 = num1+num2;
+   return num3;
 }
 ```
 compile demo.cpp
 ```bash
-vertex-cdt c++ demo.cpp
+vertex-cdt c++ demo.cpp --export-function sum
 ```

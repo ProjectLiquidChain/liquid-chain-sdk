@@ -1,12 +1,12 @@
 package tools
 
 import (
-	"fmt"
+	"log"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get"}
+var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get", "chain_storage_size_get", "chain_storage_get", "chain_storage_set", "chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"}
 var AllowImportWasi = "wasi_unstable"
 
 func checkFunction(fun string) bool {
@@ -18,26 +18,37 @@ func checkFunction(fun string) bool {
 	return false
 }
 
-func CheckImportFunction(file string) bool {
+func checkEvent(event string, events []string) bool {
+	for _, e := range events {
+		if e == event {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckImportFunction(file string, event_names []string) bool {
 	bytes, _ := wasm.ReadBytes(file)
 	var check = true
 	compiled, err := wasm.Compile(bytes)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	importFunction := compiled.Imports
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
 			if fn.Namespace == "env" {
 				if !checkFunction(fn.Name) {
-					fmt.Println("error: function " + fn.Name + " not support!")
-					check = false
+					if !checkEvent(fn.Name, event_names) {
+						log.Println("error: function " + fn.Name + " not support!")
+						check = false
+					}
 				}
 			}
 		} else {
-			fmt.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
+			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
 		}
 	}
-	fmt.Println("check done!")
+	log.Println("check done!")
 	return check
 }
