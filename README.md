@@ -15,8 +15,6 @@ build tool to support rust langguage
 ```bash
 ./build-rust.sh
 ```
-#### Ubuntu
-#### windown
 build vertex tool (require install golang)
 ```bash
 cd vertex-cdt && ./build.sh
