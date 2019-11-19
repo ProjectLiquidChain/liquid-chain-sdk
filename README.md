@@ -89,8 +89,8 @@ vertex-cdt rust <my_project>
 code demo in c demo.c
 ```c
 #include <vertex.h>
-Event Add(int num1, int num2)
-Event Call(address x)
+Event Add(int num1, int num2);
+Event Call(address x);
 int sum(int num1, int num2){
    int num3 = num1+num2;
    Add(num1,num2);
@@ -104,8 +104,10 @@ vertex-cdt c demo.c --export-function sum
 code demo in c++ demo.cpp
 ```c++
 #include <vertex.h>
+WASI_EXPORT Event Add(int num1, int num2);
 WASI_EXPORT int sum(int num1, int num2){
    int num3 = num1+num2;
+   Add(num1,num2);
    return num3;
 }
 ```
