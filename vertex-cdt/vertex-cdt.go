@@ -12,7 +12,7 @@ import (
 
 var app = cli.NewApp()
 
-func info() {
+func init() {
 	app.Name = "smart contract development CLI"
 	app.Usage = "vertex-cdt [language option] [file] [export function] [functions]"
 	app.Version = "0.0.1"
@@ -75,7 +75,6 @@ func commands() {
 	}
 }
 func main() {
-	info()
 	commands()
 	err := app.Run(os.Args)
 	if err != nil {

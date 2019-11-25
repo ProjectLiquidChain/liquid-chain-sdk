@@ -6,7 +6,10 @@ import (
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get", "chain_storage_size_get", "chain_storage_get", "chain_storage_set", "chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"}
+var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get", "chain_storage_size_get",
+	"chain_storage_get", "chain_storage_set", "chain_print_bytes", "chain_event_emit", "chain_get_caller",
+	"chain_get_creator", "chain_invoke", "chain_get_owner"}
+
 var AllowImportWasi = "wasi_unstable"
 
 func checkFunction(fun string) bool {

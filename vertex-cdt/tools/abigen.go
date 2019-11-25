@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32", "float64", "address"}
+var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32",
+	"float64", "address"}
+
+const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
 
 // define type of ABI
 type Parameter struct {
@@ -65,7 +68,7 @@ func ABIgen(file string, language string, option string) (string, []string) {
 		nameFile = last[:len(last)-2]
 	}
 	jsonFile := nameFile + "-abi.json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include")
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
 	if err != nil {
@@ -184,8 +187,8 @@ func parseFunction(name string, params []Cparam, location string) Function {
 }
 
 // convert from c,c++ type to assembly vertex type
-func convertType(ctype string) string {
-	switch ctype {
+func convertType(Type string) string {
+	switch Type {
 	case "float":
 		return "float32"
 	case "double":
@@ -211,6 +214,6 @@ func convertType(ctype string) string {
 	case "unsigned-long-long":
 		return "uint64"
 	default:
-		return ctype
+		return Type
 	}
 }
