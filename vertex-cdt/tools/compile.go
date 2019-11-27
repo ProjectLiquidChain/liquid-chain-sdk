@@ -45,7 +45,7 @@ func (c *Compile) Clang(option string) string {
 	return wasmFile
 }
 func (c *Compile) Rust() {
-	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", "--target", "wasm32-wasi")
+	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)

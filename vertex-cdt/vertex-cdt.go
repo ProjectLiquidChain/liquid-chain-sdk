@@ -14,11 +14,9 @@ var app = cli.NewApp()
 
 func init() {
 	app.Name = "smart contract development CLI"
-	app.Usage = "vertex-cdt [language option] [file] [export function] [functions]"
+	app.Usage = "vertex-cdt [language option] [file] --export-function [functions]"
 	app.Version = "0.0.1"
 	app.Author = "vertex team"
-}
-func commands() {
 	app.Commands = []cli.Command{
 		{
 			Name:    "c++",
@@ -75,7 +73,6 @@ func commands() {
 	}
 }
 func main() {
-	commands()
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatalln(err)
