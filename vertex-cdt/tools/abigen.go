@@ -105,6 +105,7 @@ func parse(file string, exportFunction []string) []string {
 	functions := []Function{}
 	events := []Event{}
 	event_names := []string{}
+	function_name := []string{}
 	for i := 0; i < len(data); i++ {
 		if data[i].Tag != "function" {
 			continue
@@ -115,6 +116,7 @@ func parse(file string, exportFunction []string) []string {
 			events = append(events, event)
 			continue
 		}
+		function_name = append(function_name, data[i].Name)
 		if !checkAllowFunction(data[i].Name, exportFunction) {
 			continue
 		}
@@ -128,6 +130,11 @@ func parse(file string, exportFunction []string) []string {
 	err := ioutil.WriteFile(file, resultJson, 0644)
 	if err != nil {
 		log.Println(err)
+	}
+	for _, fn := range exportFunction {
+		if !checkAllowFunction(fn, function_name) {
+			log.Println("warning: ", "export function "+fn+" not found!")
+		}
 	}
 	return event_names
 }
