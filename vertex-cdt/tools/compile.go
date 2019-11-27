@@ -6,6 +6,12 @@ import (
 	"strings"
 )
 
+const SYS_WASI = "--sysroot=/usr/local/opt/wasi-sdk/share/wasi-sysroot"
+const ALLOW_UNDEFINED = "-Wl,--no-entry,--allow-undefined,--demangle"
+const TARGET = "--target=wasm32-wasi"
+const CLANG = "/usr/local/opt/wasi-sdk/bin/clang"
+const CLANGPLUS = "/usr/local/opt/wasi-sdk/bin/clang++"
+
 type Compile struct {
 	File     string
 	Language string
@@ -16,10 +22,10 @@ func (c *Compile) Clang(option string) string {
 	last := names[len(names)-1]
 	var nameFile, tool string
 	if c.Language == "c++" {
-		tool = "/usr/local/opt/wasi-sdk/bin/clang++"
+		tool = CLANGPLUS
 		nameFile = last[:len(last)-4]
 	} else if c.Language == "c" {
-		tool = "/usr/local/opt/wasi-sdk/bin/clang"
+		tool = CLANG
 		nameFile = last[:len(last)-2]
 	}
 	wasmFile := nameFile + ".wasm"
@@ -30,7 +36,7 @@ func (c *Compile) Clang(option string) string {
 			op += ",--export=" + cfun
 		}
 	}
-	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-O3", "-nostartfiles", "--target=wasm32-wasi", "-Wl,--no-entry,--allow-undefined,--demangle", "-Wl"+op, "--sysroot=/usr/local/opt/wasi-sdk/share/wasi-sysroot")
+	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-O3", "-nostartfiles", TARGET, ALLOW_UNDEFINED, "-Wl"+op, SYS_WASI)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
@@ -39,7 +45,7 @@ func (c *Compile) Clang(option string) string {
 	return wasmFile
 }
 func (c *Compile) Rust() {
-	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", "--target", "wasm32-wasi")
+	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Fatal(err)

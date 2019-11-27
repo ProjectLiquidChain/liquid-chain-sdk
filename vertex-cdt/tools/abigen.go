@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32", "float64", "address"}
+var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32",
+	"float64", "address"}
+
+const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
 
 // define type of ABI
 type Parameter struct {
@@ -65,7 +68,7 @@ func ABIgen(file string, language string, option string) (string, []string) {
 		nameFile = last[:len(last)-2]
 	}
 	jsonFile := nameFile + "-abi.json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include")
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
 	if err != nil {
@@ -103,63 +106,20 @@ func parse(file string, exportFunction []string) []string {
 	events := []Event{}
 	event_names := []string{}
 	for i := 0; i < len(data); i++ {
-		params := []Parameter{}
-		event_params := []EventParam{}
 		if data[i].Tag != "function" {
 			continue
 		}
 		if data[i].ReturnType.Tag == "Event" {
 			event_names = append(event_names, data[i].Name)
-			for j := 0; j < len(data[i].Parameters); j++ {
-				param := EventParam{data[i].Parameters[j].Name, data[i].Parameters[j].Type.Tag}
-				if data[i].Parameters[j].Type.Tag[1:] == "array" || data[i].Parameters[j].Type.Tag[1:] == "pointer" {
-					log.Println(data[i].Location, "variable "+data[i].Parameters[j].Name, "warning: type array "+param.Type+" not support in event!")
-					param.Type = ""
-				} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
-					param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
-				} else {
-					if data[i].Parameters[j].Type.Tag == "address" {
-						param.Type = "address"
-					} else {
-						param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
-					}
-				}
-				event_params = append(event_params, param)
-			}
-			event := Event{data[i].Name, event_params}
+			event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
 			events = append(events, event)
 			continue
 		}
 		if !checkAllowFunction(data[i].Name, exportFunction) {
 			continue
 		}
-		for j := 0; j < len(data[i].Parameters); j++ {
-			param := Parameter{false, data[i].Parameters[j].Type.Tag}
-			if data[i].Parameters[j].Type.Tag[1:] == "array" || data[i].Parameters[j].Type.Tag[1:] == "pointer" {
-				param.IsArray = true
-				param.Type = data[i].Parameters[j].Type.Type.Tag
-				if string(data[i].Parameters[j].Type.Type.Tag[0]) == ":" {
-					param.Type = convertType(param.Type[1:])
-				} else {
-					param.Type = data[i].Parameters[j].Type.Type.Tag[:len(param.Type)-2]
-				}
-			} else if string(data[i].Parameters[j].Type.Tag[0]) == ":" {
-				param.IsArray = false
-				param.Type = convertType(data[i].Parameters[j].Type.Tag[1:])
-			} else {
-				param.IsArray = false
-				if data[i].Parameters[j].Type.Tag == "address" {
-					param.Type = "address"
-				} else {
-					param.Type = data[i].Parameters[j].Type.Tag[:len(param.Type)-2]
-				}
-			}
-			if !checkAllowType(param.Type) {
-				log.Println(data[i].Location, "variable "+data[i].Parameters[j].Name, "warning: type "+param.Type+" not support!")
-			}
-			params = append(params, param)
-		}
-		function := Function{data[i].Name, params}
+
+		function := parseFunction(data[i].Name, data[i].Parameters, data[i].Location)
 		functions = append(functions, function)
 	}
 	result.Functions = functions
@@ -172,9 +132,63 @@ func parse(file string, exportFunction []string) []string {
 	return event_names
 }
 
+// parse to vertex event
+func parseEvent(name string, params []Cparam, location string) Event {
+	event_params := []EventParam{}
+	for j := 0; j < len(params); j++ {
+		param := EventParam{params[j].Name, params[j].Type.Tag}
+		if params[j].Type.Tag[1:] == "array" || params[j].Type.Tag[1:] == "pointer" {
+			log.Println(location, "variable "+params[j].Name, "warning: type array "+param.Type+" not support in event!")
+			param.Type = ""
+		} else if string(params[j].Type.Tag[0]) == ":" {
+			param.Type = convertType(params[j].Type.Tag[1:])
+		} else {
+			if params[j].Type.Tag == "address" {
+				param.Type = "address"
+			} else {
+				param.Type = params[j].Type.Tag[:len(param.Type)-2]
+			}
+		}
+		event_params = append(event_params, param)
+	}
+	return Event{name, event_params}
+}
+
+// parse to vertex function
+func parseFunction(name string, params []Cparam, location string) Function {
+	function_params := []Parameter{}
+	for j := 0; j < len(params); j++ {
+		param := Parameter{false, params[j].Type.Tag}
+		if params[j].Type.Tag[1:] == "array" || params[j].Type.Tag[1:] == "pointer" {
+			param.IsArray = true
+			param.Type = params[j].Type.Type.Tag
+			if string(params[j].Type.Type.Tag[0]) == ":" {
+				param.Type = convertType(param.Type[1:])
+			} else {
+				param.Type = params[j].Type.Type.Tag[:len(param.Type)-2]
+			}
+		} else if string(params[j].Type.Tag[0]) == ":" {
+			param.IsArray = false
+			param.Type = convertType(params[j].Type.Tag[1:])
+		} else {
+			param.IsArray = false
+			if params[j].Type.Tag == "address" {
+				param.Type = "address"
+			} else {
+				param.Type = params[j].Type.Tag[:len(param.Type)-2]
+			}
+		}
+		if !checkAllowType(param.Type) {
+			log.Println(location, "variable "+params[j].Name, "warning: type "+param.Type+" not support!")
+		}
+		function_params = append(function_params, param)
+	}
+	return Function{name, function_params}
+}
+
 // convert from c,c++ type to assembly vertex type
-func convertType(ctype string) string {
-	switch ctype {
+func convertType(Type string) string {
+	switch Type {
 	case "float":
 		return "float32"
 	case "double":
@@ -200,6 +214,6 @@ func convertType(ctype string) string {
 	case "unsigned-long-long":
 		return "uint64"
 	default:
-		return ctype
+		return Type
 	}
 }

@@ -12,13 +12,11 @@ import (
 
 var app = cli.NewApp()
 
-func info() {
+func init() {
 	app.Name = "smart contract development CLI"
-	app.Usage = "vertex-cdt [language option] compile [file]"
+	app.Usage = "vertex-cdt [language option] [file] --export-function [functions]"
 	app.Version = "0.0.1"
 	app.Author = "vertex team"
-}
-func commands() {
 	app.Commands = []cli.Command{
 		{
 			Name:    "c++",
@@ -33,7 +31,7 @@ func commands() {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFile(abiFile)
-					utils.DeleteFile(result) // remove file .wasm
+					utils.DeleteFile(result)
 				}
 			},
 		},
@@ -50,7 +48,7 @@ func commands() {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFile(abiFile)
-					utils.DeleteFile(result) //remove file .wasm
+					utils.DeleteFile(result)
 				}
 			},
 		},
@@ -68,15 +66,13 @@ func commands() {
 				if tool.CheckImportFunction(c.Args().First()+"/target/wasm32-wasi/debug/"+file[len(file)-1]+".wasm", []string{}) {
 					log.Println("compile completed!")
 				} else {
-					utils.DeleteFolder(c.Args().First() + "/target") // ? remove file .wasm
+					utils.DeleteFolder(c.Args().First() + "/target")
 				}
 			},
 		},
 	}
 }
 func main() {
-	info()
-	commands()
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatalln(err)

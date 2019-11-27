@@ -4,20 +4,15 @@
 ```bash
 git clone --recursive https://github.com/QuoineFinancial/vertex-sdk
 ```
-extract package wasi-sdk-7.0.zip
 ### Build Tool
 #### MacOS
-build tools to support C, C++ language
+build tools to support C, C++ language (require install golang)
 ```bash
 brew install cmake && ./build-c.sh
 ```
 build tool to support rust langguage
 ```bash
 ./build-rust.sh
-```
-build vertex tool (require install golang)
-```bash
-cd vertex-cdt && ./build.sh
 ```
 usage for vertex tools
 ```bash
