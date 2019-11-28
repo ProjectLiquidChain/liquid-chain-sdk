@@ -26,7 +26,7 @@ func init() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c++"}
 				result := compile.Clang(c.String("export-function"))
-				abiFile, event_names := tool.ABIgen(c.Args().First(), "c++", c.String("export-function"))
+				abiFile, event_names := tool.ABIgen(c.Args().First(), "c++", c.String("export-function"), result)
 				if tool.CheckImportFunction(result, event_names) {
 					log.Println("compile completed!")
 				} else {
@@ -43,7 +43,7 @@ func init() {
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First(), "c"}
 				result := compile.Clang(c.String("export-function"))
-				abiFile, event_names := tool.ABIgen(c.Args().First(), "c", c.String("export-function"))
+				abiFile, event_names := tool.ABIgen(c.Args().First(), "c", c.String("export-function"), result)
 				if tool.CheckImportFunction(result, event_names) {
 					log.Println("compile completed!")
 				} else {

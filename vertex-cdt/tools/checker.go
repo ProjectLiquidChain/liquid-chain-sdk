@@ -55,3 +55,20 @@ func CheckImportFunction(file string, event_names []string) bool {
 	log.Println("check done!")
 	return check
 }
+
+func getImportFunction(file string) []string {
+	list := []string{}
+
+	bytes, _ := wasm.ReadBytes(file)
+	compiled, err := wasm.Compile(bytes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	importFunction := compiled.Imports
+	for _, fn := range importFunction {
+		if fn.Namespace == "env" {
+			list = append(list, fn.Name)
+		}
+	}
+	return list
+}

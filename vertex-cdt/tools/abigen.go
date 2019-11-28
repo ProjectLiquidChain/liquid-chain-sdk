@@ -58,7 +58,7 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string, option string) (string, []string) {
+func ABIgen(file string, language string, option string, wasmfile string) (string, []string) {
 	names := strings.Split(file, "/")
 	last := names[len(names)-1]
 	var nameFile string
@@ -76,7 +76,7 @@ func ABIgen(file string, language string, option string) (string, []string) {
 		log.Fatalln(err)
 	}
 	exportFunction := strings.Split(option, ",")
-	event_names := parse(jsonFile, exportFunction)
+	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names
 }
 func checkAllowType(atype string) bool {
@@ -96,7 +96,7 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 	return false
 }
 
-func parse(file string, exportFunction []string) []string {
+func parse(file string, exportFunction []string, wasmfile string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
 	_ = json.Unmarshal([]byte(jsonFile), &data)
@@ -106,14 +106,19 @@ func parse(file string, exportFunction []string) []string {
 	events := []Event{}
 	event_names := []string{}
 	function_name := []string{}
+	import_func := getImportFunction(wasmfile)
 	for i := 0; i < len(data); i++ {
 		if data[i].Tag != "function" {
 			continue
 		}
 		if data[i].ReturnType.Tag == "Event" {
-			event_names = append(event_names, data[i].Name)
-			event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
-			events = append(events, event)
+			if checkAllowFunction(data[i].Name, import_func) {
+				event_names = append(event_names, data[i].Name)
+				event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
+				events = append(events, event)
+			} else {
+				log.Println("warning: "+data[i].Location, "Event "+data[i].Name+" is declared but not use!")
+			}
 			continue
 		}
 		function_name = append(function_name, data[i].Name)
