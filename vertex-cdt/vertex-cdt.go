@@ -19,36 +19,19 @@ func init() {
 	app.Author = "vertex team"
 	app.Commands = []cli.Command{
 		{
-			Name:    "c++",
-			Aliases: []string{"c++"},
-			Usage:   "compile c++ language file",
-			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
-			Action: func(c *cli.Context) {
-				compile := tool.Compile{c.Args().First(), "c++"}
-				result := compile.Clang(c.String("export-function"))
-				abiFile, event_names := tool.ABIgen(c.Args().First(), "c++", c.String("export-function"), result)
-				if tool.CheckImportFunction(result, event_names) {
-					log.Println("compile completed!")
-				} else {
-					utils.DeleteFile(abiFile)
-					utils.DeleteFile(result)
-				}
-			},
-		},
-		{
-			Name:    "c",
+			Name:    "compile",
 			Aliases: []string{"c"},
-			Usage:   "compile c language file",
+			Usage:   "compile c,c++ language file",
 			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
 			Action: func(c *cli.Context) {
-				compile := tool.Compile{c.Args().First(), "c"}
-				result := compile.Clang(c.String("export-function"))
-				abiFile, event_names := tool.ABIgen(c.Args().First(), "c", c.String("export-function"), result)
-				if tool.CheckImportFunction(result, event_names) {
+				compile := tool.Compile{c.Args().First()}
+				wasmFile, nameFile := compile.Clang(c.String("export-function"))
+				abiFile, event_names := tool.ABIgen(c.Args().First(), nameFile, c.String("export-function"), wasmFile)
+				if tool.CheckImportFunction(wasmFile, event_names) {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFile(abiFile)
-					utils.DeleteFile(result)
+					utils.DeleteFile(wasmFile)
 				}
 			},
 		},
@@ -61,7 +44,7 @@ func init() {
 				if file[len(file)-1] == "" {
 					file[len(file)-1] = file[len(file)-2]
 				}
-				compile := tool.Compile{c.Args().First(), "rust"}
+				compile := tool.Compile{c.Args().First()}
 				compile.Rust()
 				if tool.CheckImportFunction(c.Args().First()+"/target/wasm32-wasi/debug/"+file[len(file)-1]+".wasm", []string{}) {
 					log.Println("compile completed!")
