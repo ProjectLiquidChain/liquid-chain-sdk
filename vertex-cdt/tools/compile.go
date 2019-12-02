@@ -13,20 +13,23 @@ const CLANG = "/usr/local/opt/wasi-sdk/bin/clang"
 const CLANGPLUS = "/usr/local/opt/wasi-sdk/bin/clang++"
 
 type Compile struct {
-	File     string
-	Language string
+	File string
 }
 
-func (c *Compile) Clang(option string) string {
+func (c *Compile) Clang(option string) (string, string) {
 	names := strings.Split(c.File, "/")
 	last := names[len(names)-1]
+	file := strings.Split(last, ".")
+	language := file[len(file)-1]
 	var nameFile, tool string
-	if c.Language == "c++" {
+	if language == "cpp" {
 		tool = CLANGPLUS
 		nameFile = last[:len(last)-4]
-	} else if c.Language == "c" {
+	} else if language == "c" {
 		tool = CLANG
 		nameFile = last[:len(last)-2]
+	} else {
+		log.Fatal("file not support compile")
 	}
 	wasmFile := nameFile + ".wasm"
 	function := strings.Split(option, ",")
@@ -42,7 +45,7 @@ func (c *Compile) Clang(option string) string {
 		log.Println(string(out))
 		log.Fatal(err)
 	}
-	return wasmFile
+	return wasmFile, nameFile
 }
 func (c *Compile) Rust() {
 	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET)

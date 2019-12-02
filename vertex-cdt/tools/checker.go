@@ -6,9 +6,8 @@ import (
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get", "chain_storage_size_get",
-	"chain_storage_get", "chain_storage_set", "chain_print_bytes", "chain_event_emit", "chain_get_caller",
-	"chain_get_creator", "chain_invoke", "chain_get_owner"}
+var AllowFunctionEnv = []string{"chain_storage_size_get", "chain_storage_get", "chain_storage_set",
+	"chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"}
 
 var AllowImportWasi = "wasi_unstable"
 
@@ -40,13 +39,9 @@ func CheckImportFunction(file string, event_names []string) bool {
 	importFunction := compiled.Imports
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
-			if fn.Namespace == "env" {
-				if !checkFunction(fn.Name) {
-					if !checkEvent(fn.Name, event_names) {
-						log.Println("error: function " + fn.Name + " not support!")
-						check = false
-					}
-				}
+			if fn.Namespace == "env" && !checkFunction(fn.Name) && !checkEvent(fn.Name, event_names) {
+				log.Println("error: function " + fn.Name + " not support!")
+				check = false
 			}
 		} else {
 			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")

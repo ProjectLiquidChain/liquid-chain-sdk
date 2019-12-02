@@ -32,8 +32,7 @@ AUTHOR:
    vertex team
 
 COMMANDS:
-   c++, c++  compile c++ language file
-   c, c      compile c language file
+   compile  compile c,c++ language file
    rust, r   compile rust language file
    help, h   Shows a list of commands or help for one command
 
@@ -44,11 +43,11 @@ GLOBAL OPTIONS:
 ### Compile to WebAssembly
 C language
 ```bash
-vertex-cdt c <file .c> --export-function <functions name>
+vertex-cdt compile <file .c> --export-function <functions name>
 ```
  C++ language
 ```bash
-vertex-cdt c++ <file .cpp> --export-function <functions name>
+vertex-cdt compile <file .cpp> --export-function <functions name>
 ```
 rust language
 ```bash

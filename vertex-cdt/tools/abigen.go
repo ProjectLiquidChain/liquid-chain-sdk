@@ -8,9 +8,10 @@ import (
 	"strings"
 )
 
-var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64", "float32",
-	"float64", "address"}
+var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64",
+	"float32", "float64", "address"}
 
+const VERSION = 1
 const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
 
 // define type of ABI
@@ -58,16 +59,17 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-func ABIgen(file string, language string, option string, wasmfile string) (string, []string) {
-	names := strings.Split(file, "/")
-	last := names[len(names)-1]
-	var nameFile string
-	if language == "c++" {
-		nameFile = last[:len(last)-4]
-	} else if language == "c" {
-		nameFile = last[:len(last)-2]
-	}
+/*
+	function ABIgen create json file
+	params:
+		- file: name of file c or c++
+		- language: c or c++
+		- option: export functions name
+		- wasmfile: name of file .wasm
+*/
+func ABIgen(file string, nameFile string, option string, wasmfile string) (string, []string) {
 	jsonFile := nameFile + "-abi.json"
+	// use c2ffi to create file json
 	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
@@ -76,9 +78,16 @@ func ABIgen(file string, language string, option string, wasmfile string) (strin
 		log.Fatalln(err)
 	}
 	exportFunction := strings.Split(option, ",")
+	// parse c2ffi ABI json to vertex ABI
 	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names
 }
+
+/*
+	function checkAllowType : check vertex VM type.
+	params:
+		- atype: c or c++ type
+*/
 func checkAllowType(atype string) bool {
 	for _, ctype := range allowType {
 		if ctype == atype {
@@ -87,6 +96,13 @@ func checkAllowType(atype string) bool {
 	}
 	return false
 }
+
+/*
+	function checkAllowFunction: check the export functions
+	params:
+		- function
+		- allowFunction: list export functions or events
+*/
 func checkAllowFunction(function string, allowFunction []string) bool {
 	for _, fn := range allowFunction {
 		if fn == function {
@@ -96,12 +112,19 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 	return false
 }
 
+/*
+	function parse: parse from c2ffi functions to vertex abi functions and events
+	params:
+		- file : name of c2ffi json file
+		- exportFunction: list export function
+		- wasmfile: name of wasm file
+*/
 func parse(file string, exportFunction []string, wasmfile string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
 	data := []CFunction{}
 	_ = json.Unmarshal([]byte(jsonFile), &data)
 	result := ABI{}
-	result.Version = 1
+	result.Version = VERSION
 	functions := []Function{}
 	events := []Event{}
 	event_names := []string{}
@@ -117,6 +140,7 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 				event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
 				events = append(events, event)
 			} else {
+				// warning event is declare but not use
 				log.Println("warning: "+data[i].Location, "Event "+data[i].Name+" is declared but not use!")
 			}
 			continue
@@ -136,6 +160,7 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 	if err != nil {
 		log.Println(err)
 	}
+	// warning function not found
 	for _, fn := range exportFunction {
 		if !checkAllowFunction(fn, function_name) {
 			log.Println("warning: ", "export function "+fn+" not found!")
