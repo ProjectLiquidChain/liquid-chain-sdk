@@ -1,9 +1,11 @@
 package tools
 
 import (
+	"bufio"
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -82,6 +84,104 @@ func ABIgen(file string, nameFile string, option string, wasmfile string) (strin
 	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names
 }
+func ABIRust(file string, nameFile string, path string, wasmfile string) (string, []string) {
+	rustfile, err := os.Open(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rustfile.Close()
+	result := ABI{}
+	result.Version = VERSION
+	functions := []Function{}
+	events := []Event{}
+	event_names := []string{}
+	import_func := getImportFunction(wasmfile)
+	scanner := bufio.NewScanner(rustfile)
+	var funcDecl string
+	var block bool
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "fn") {
+			funcDecl = scanner.Text()
+			block = true
+		}
+		if block {
+			funcDecl += scanner.Text()
+			if strings.Contains(scanner.Text(), "{") {
+				function := parseRustFunction(funcDecl)
+				functions = append(functions, function)
+				funcDecl = ""
+				block = false
+			}
+			if strings.Contains(scanner.Text(), ";") && strings.Contains(funcDecl, "Event") {
+				event := parseRustEvent(funcDecl)
+				if checkAllowFunction(event.Name, import_func) {
+					event_names = append(event_names, event.Name)
+					events = append(events, event)
+				} else {
+					log.Println("warning: Event " + event.Name + " is declared but not use!")
+				}
+				funcDecl = ""
+				block = false
+			}
+		}
+	}
+	result.Functions = functions
+	result.Events = events
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+	jsonFile := path + nameFile + "-abi.json"
+	resultJson, _ := json.Marshal(result)
+	err_json := ioutil.WriteFile(jsonFile, resultJson, 0644)
+	if err_json != nil {
+		log.Println(err_json)
+	}
+	return jsonFile, event_names
+}
+func token(stringToken string) string {
+	return strings.ReplaceAll(stringToken, " ", "")
+}
+func parseRustFunction(declFunction string) Function {
+	function_params := []Parameter{}
+	name := strings.Split(declFunction, "(")
+	function_name := strings.Split(name[0], "fn")
+	params := strings.Split(name[1], ")")
+	list_params := strings.Split(params[0], ",")
+	for _, param := range list_params {
+		rust_type := strings.Split(param, ":")
+		var param_rust Parameter
+		if strings.Contains(rust_type[1], "[") {
+			array_type := token(rust_type[1])
+			array_type = strings.Replace(array_type, "&", "", -1)
+			array_type = strings.Replace(array_type, "[", "", -1)
+			array_type = strings.Replace(array_type, "]", "", -1)
+			param_rust = Parameter{true, convertRustType(array_type)}
+		} else {
+			param_rust = Parameter{false, convertRustType(token(rust_type[1]))}
+		}
+		function_params = append(function_params, param_rust)
+	}
+	return Function{token(function_name[1]), function_params}
+}
+func parseRustEvent(declEvent string) Event {
+	event_params := []EventParam{}
+	name := strings.Split(declEvent, "(")
+	event_name := strings.Split(name[0], "fn")
+	params := strings.Split(name[1], ")")
+	list_params := strings.Split(params[0], ",")
+	for _, param := range list_params {
+		rust_type := strings.Split(param, ":")
+		var param_rust EventParam
+		if strings.Contains(rust_type[1], "[") {
+			param_rust = EventParam{token(rust_type[0]), "array"}
+			log.Println("error: type array is not support in event parameter !")
+		} else {
+			param_rust = EventParam{token(rust_type[0]), convertRustType(token(rust_type[1]))}
+		}
+		event_params = append(event_params, param_rust)
+	}
+	return Event{token(event_name[1]), event_params}
+}
 
 /*
 	function checkAllowType : check vertex VM type.
@@ -140,7 +240,6 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 				event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
 				events = append(events, event)
 			} else {
-				// warning event is declare but not use
 				log.Println("warning: "+data[i].Location, "Event "+data[i].Name+" is declared but not use!")
 			}
 			continue
@@ -249,6 +348,32 @@ func convertType(Type string) string {
 	case "long-long":
 		return "int64"
 	case "unsigned-long-long":
+		return "uint64"
+	default:
+		return Type
+	}
+}
+func convertRustType(Type string) string {
+	switch Type {
+	case "f32":
+		return "float32"
+	case "f64":
+		return "float64"
+	case "i8":
+		return "int8"
+	case "u8":
+		return "uint8"
+	case "i16":
+		return "int16"
+	case "u16":
+		return "uint16"
+	case "i32":
+		return "int32"
+	case "u32":
+		return "uint32"
+	case "i64":
+		return "int64"
+	case "u64":
 		return "uint64"
 	default:
 		return Type
