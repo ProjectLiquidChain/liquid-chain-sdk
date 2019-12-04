@@ -96,6 +96,7 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 	events := []Event{}
 	event_names := []string{}
 	import_func := getImportFunction(wasmfile)
+	export_func := getExportFunction(wasmfile)
 	scanner := bufio.NewScanner(rustfile)
 	var funcDecl string
 	var block bool
@@ -108,7 +109,9 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 			funcDecl += scanner.Text()
 			if strings.Contains(scanner.Text(), "{") {
 				function := parseRustFunction(funcDecl)
-				functions = append(functions, function)
+				if checkAllowFunction(function.Name, export_func) {
+					functions = append(functions, function)
+				}
 				funcDecl = ""
 				block = false
 			}

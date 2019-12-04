@@ -67,3 +67,18 @@ func getImportFunction(file string) []string {
 	}
 	return list
 }
+
+func getExportFunction(file string) []string {
+	list := []string{}
+
+	bytes, _ := wasm.ReadBytes(file)
+	compiled, err := wasm.Compile(bytes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	exportFunction := compiled.Exports
+	for _, fn := range exportFunction {
+		list = append(list, fn.Name)
+	}
+	return list
+}
