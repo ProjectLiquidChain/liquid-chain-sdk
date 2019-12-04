@@ -51,7 +51,8 @@ func (c *Compile) Rust() {
 	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
+		log.Println(string(out))
 		log.Fatal(err)
 	}
-	log.Println(string(out))
+	// log.Println(string(out))
 }

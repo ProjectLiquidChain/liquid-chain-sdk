@@ -46,10 +46,13 @@ func init() {
 				}
 				compile := tool.Compile{c.Args().First()}
 				compile.Rust()
-				if tool.CheckImportFunction(c.Args().First()+"/target/wasm32-wasi/debug/"+file[len(file)-1]+".wasm", []string{}) {
+				wasm_file := c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm"
+				abiFile, event_names := tool.ABIRust(c.Args().First()+"/src/lib.rs", "lib", c.Args().First()+"/src/", wasm_file)
+				if tool.CheckImportFunction(wasm_file, event_names) {
 					log.Println("compile completed!")
 				} else {
 					utils.DeleteFolder(c.Args().First() + "/target")
+					utils.DeleteFile(abiFile)
 				}
 			},
 		},
