@@ -51,20 +51,12 @@ vertex-cdt compile <file .cpp> --export-function <functions name>
 ```
 rust language
 ```bash
-vertex-cdt rust <path folder project>
+vertex-cdt build <path folder project>
 ```
 ### Create first project in rust language
 create new project
 ```bash
-cargo new --lib <my_project> && cd <my_project>
-```
-Add the following configurations to Cargo.toml
-```toml
-[lib]
-crate-type =["cdylib"]
-
-[profile.release]
-lto = true #link time optimization to shrink wasm size
+vertex-cdt init --name <name_of_project>
 ```
 example code in lib.rs :
 ```rust
@@ -75,7 +67,7 @@ pub extern fn add(x: u32, y: u32) -> u32 {
 ```
 compile the project to WebAssembly
 ```bash
-vertex-cdt rust <my_project>
+vertex-cdt build <name_of_project>
 ```
 ### Create first project in C,C++ language
 code demo in c demo.c
