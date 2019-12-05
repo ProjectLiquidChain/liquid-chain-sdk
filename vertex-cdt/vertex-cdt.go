@@ -36,24 +36,37 @@ func init() {
 			},
 		},
 		{
-			Name:    "rust",
-			Aliases: []string{"r"},
-			Usage:   "compile rust language file",
+			Name:    "build",
+			Aliases: []string{"b"},
+			Usage:   "compile rust language folder",
 			Action: func(c *cli.Context) {
 				file := strings.Split(c.Args().First(), "/")
 				if file[len(file)-1] == "" {
 					file[len(file)-1] = file[len(file)-2]
 				}
+				if strings.Contains(file[len(file)-1], "-") {
+					file[len(file)-1] = strings.ReplaceAll(file[len(file)-1], "-", "_")
+				}
 				compile := tool.Compile{c.Args().First()}
-				compile.Rust()
-				wasm_file := c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm"
-				abiFile, event_names := tool.ABIRust(c.Args().First()+"/src/lib.rs", "lib", c.Args().First()+"/src/", wasm_file)
+				compile.Rust(file[len(file)-1] + ".wasm")
+				wasm_file := c.Args().First() + "/" + file[len(file)-1] + ".wasm"
+				abiFile, event_names := tool.ABIRust(c.Args().First()+"/src/lib.rs", file[len(file)-1], c.Args().First()+"/", wasm_file)
 				if tool.CheckImportFunction(wasm_file, event_names) {
 					log.Println("compile completed!")
 				} else {
-					utils.DeleteFolder(c.Args().First() + "/target")
+					utils.DeleteFile(c.Args().First() + file[len(file)-1] + ".wasm")
 					utils.DeleteFile(abiFile)
 				}
+			},
+		},
+		{
+			Name:    "init",
+			Aliases: []string{"r"},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "name, n"}},
+			Usage:   "create rust project",
+			Action: func(c *cli.Context) {
+				file := tool.Create(c.String("name"))
+				log.Println(file)
 			},
 		},
 	}

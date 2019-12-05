@@ -71,7 +71,6 @@ type Type struct {
 */
 func ABIgen(file string, nameFile string, option string, wasmfile string) (string, []string) {
 	jsonFile := nameFile + "-abi.json"
-	// use c2ffi to create file json
 	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
@@ -80,7 +79,6 @@ func ABIgen(file string, nameFile string, option string, wasmfile string) (strin
 		log.Fatalln(err)
 	}
 	exportFunction := strings.Split(option, ",")
-	// parse c2ffi ABI json to vertex ABI
 	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names
 }
@@ -154,11 +152,12 @@ func parseRustFunction(declFunction string) Function {
 		rust_type := strings.Split(param, ":")
 		var param_rust Parameter
 		if strings.Contains(rust_type[1], "[") {
-			array_type := token(rust_type[1])
-			array_type = strings.Replace(array_type, "&", "", -1)
-			array_type = strings.Replace(array_type, "[", "", -1)
-			array_type = strings.Replace(array_type, "]", "", -1)
-			param_rust = Parameter{true, convertRustType(array_type)}
+			array := token(rust_type[1])
+			array = strings.Replace(array, "&", "", -1)
+			array = strings.Replace(array, "[", "", -1)
+			array = strings.Replace(array, "]", "", -1)
+			array_type := strings.Split(array, ";")
+			param_rust = Parameter{true, convertRustType(array_type[0])}
 		} else {
 			param_rust = Parameter{false, convertRustType(token(rust_type[1]))}
 		}

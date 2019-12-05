@@ -47,12 +47,25 @@ func (c *Compile) Clang(option string) (string, string) {
 	}
 	return wasmFile, nameFile
 }
-func (c *Compile) Rust() {
-	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET)
+func (c *Compile) Rust(name string) {
+	cmd := exec.Command("cargo", "build", "--manifest-path", c.File+"/Cargo.toml", TARGET, "--release")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(string(out))
 		log.Fatal(err)
 	}
-	// log.Println(string(out))
+	log.Println(string(out))
+	cmd = exec.Command("mv", c.File+"/target/wasm32-wasi/release/"+name, c.File+"/")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		log.Println(string(out))
+		log.Fatal(err)
+	}
+	cmd = exec.Command("rm", "-rf", c.File+"/target", c.File+"/Cargo.lock", c.File+"/.gitignore")
+	out, err = cmd.CombinedOutput()
+	if err != nil {
+		log.Println(string(out))
+		log.Fatal(err)
+	}
+	log.Println(string(out))
 }
