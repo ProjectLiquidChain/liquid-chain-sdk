@@ -71,7 +71,6 @@ type Type struct {
 */
 func ABIgen(file string, nameFile string, option string, wasmfile string) (string, []string) {
 	jsonFile := nameFile + "-abi.json"
-	// use c2ffi to create file json
 	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
 	out, err := cmd.CombinedOutput()
 	// log.Println(string(out))
@@ -80,7 +79,6 @@ func ABIgen(file string, nameFile string, option string, wasmfile string) (strin
 		log.Fatalln(err)
 	}
 	exportFunction := strings.Split(option, ",")
-	// parse c2ffi ABI json to vertex ABI
 	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names
 }
@@ -96,6 +94,7 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 	events := []Event{}
 	event_names := []string{}
 	import_func := getImportFunction(wasmfile)
+	export_func := getExportFunction(wasmfile)
 	scanner := bufio.NewScanner(rustfile)
 	var funcDecl string
 	var block bool
@@ -108,7 +107,9 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 			funcDecl += scanner.Text()
 			if strings.Contains(scanner.Text(), "{") {
 				function := parseRustFunction(funcDecl)
-				functions = append(functions, function)
+				if checkAllowFunction(function.Name, export_func) {
+					functions = append(functions, function)
+				}
 				funcDecl = ""
 				block = false
 			}
@@ -149,13 +150,17 @@ func parseRustFunction(declFunction string) Function {
 	list_params := strings.Split(params[0], ",")
 	for _, param := range list_params {
 		rust_type := strings.Split(param, ":")
+		if len(rust_type) < 2 {
+			continue
+		}
 		var param_rust Parameter
 		if strings.Contains(rust_type[1], "[") {
-			array_type := token(rust_type[1])
-			array_type = strings.Replace(array_type, "&", "", -1)
-			array_type = strings.Replace(array_type, "[", "", -1)
-			array_type = strings.Replace(array_type, "]", "", -1)
-			param_rust = Parameter{true, convertRustType(array_type)}
+			array := token(rust_type[1])
+			array = strings.Replace(array, "&", "", -1)
+			array = strings.Replace(array, "[", "", -1)
+			array = strings.Replace(array, "]", "", -1)
+			array_type := strings.Split(array, ";")
+			param_rust = Parameter{true, convertRustType(array_type[0])}
 		} else {
 			param_rust = Parameter{false, convertRustType(token(rust_type[1]))}
 		}
