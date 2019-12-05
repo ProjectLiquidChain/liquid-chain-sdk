@@ -33,7 +33,7 @@ AUTHOR:
 
 COMMANDS:
    compile  compile c,c++ language file
-   rust, r   compile rust language file
+   build, r   build rust language project
    help, h   Shows a list of commands or help for one command
 
 GLOBAL OPTIONS:

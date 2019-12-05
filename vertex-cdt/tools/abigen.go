@@ -150,6 +150,9 @@ func parseRustFunction(declFunction string) Function {
 	list_params := strings.Split(params[0], ",")
 	for _, param := range list_params {
 		rust_type := strings.Split(param, ":")
+		if len(rust_type) < 2 {
+			continue
+		}
 		var param_rust Parameter
 		if strings.Contains(rust_type[1], "[") {
 			array := token(rust_type[1])
