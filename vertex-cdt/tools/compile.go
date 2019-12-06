@@ -54,7 +54,7 @@ func (c *Compile) Rust(name string) {
 		log.Println(string(out))
 		log.Fatal(err)
 	}
-	log.Println(string(out))
+	// log.Println(string(out))
 	cmd = exec.Command("mv", c.File+"/target/wasm32-wasi/release/"+name, c.File+"/")
 	out, err = cmd.CombinedOutput()
 	if err != nil {
