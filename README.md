@@ -83,7 +83,7 @@ int sum(int num1, int num2){
 ```
 compile demo.c
 ```bash
-vertex-cdt c demo.c --export-function sum
+vertex-cdt compile demo.c --export-function sum
 ```
 code demo in c++ demo.cpp
 ```c++
@@ -97,5 +97,5 @@ WASI_EXPORT int sum(int num1, int num2){
 ```
 compile demo.cpp
 ```bash
-vertex-cdt c++ demo.cpp --export-function sum
+vertex-cdt compile demo.cpp --export-function sum
 ```
