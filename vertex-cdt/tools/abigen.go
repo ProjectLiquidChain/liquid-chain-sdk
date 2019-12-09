@@ -98,14 +98,27 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 	scanner := bufio.NewScanner(rustfile)
 	var funcDecl string
 	var block bool
+	var block_comment bool
 	for scanner.Scan() {
-		if strings.Contains(scanner.Text(), "fn") {
-			funcDecl = scanner.Text()
+		code := scanner.Text()
+		if strings.Contains(code, "//") {
+			code = strings.Split(code, "//")[0]
+		}
+		if strings.Contains(code, "/*") {
+			code = strings.Split(code, "/*")[0]
+			block_comment = true
+		}
+		if strings.Contains(code, "*/") && block_comment {
+			code = strings.Split(code, "*/")[1]
+			block_comment = false
+		}
+		if strings.Contains(code, "fn") {
+			funcDecl = code
 			block = true
 		}
 		if block {
-			funcDecl += scanner.Text()
-			if strings.Contains(scanner.Text(), "{") {
+			funcDecl += code
+			if strings.Contains(code, "{") {
 				function := parseRustFunction(funcDecl)
 				if checkAllowFunction(function.Name, export_func) {
 					functions = append(functions, function)
@@ -113,7 +126,7 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 				funcDecl = ""
 				block = false
 			}
-			if strings.Contains(scanner.Text(), ";") && strings.Contains(funcDecl, "Event") {
+			if strings.Contains(code, ";") && strings.Contains(funcDecl, "Event") {
 				event := parseRustEvent(funcDecl)
 				if checkAllowFunction(event.Name, import_func) {
 					event_names = append(event_names, event.Name)
