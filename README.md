@@ -6,9 +6,9 @@ git clone --recursive https://github.com/QuoineFinancial/vertex-sdk
 ```
 ### Build Tool
 #### MacOS
-build tools to support C, C++ language (require install golang)
+build tools to support C, C++ language (require install golang > 1.12)
 ```bash
-brew install cmake && ./build-c.sh
+./build-c.sh
 ```
 build tool to support rust langguage
 ```bash
