@@ -11,9 +11,9 @@ var AllowFunctionEnv = []string{"chain_storage_size_get", "chain_storage_get", "
 
 var AllowImportWasi = "wasi_unstable"
 
-func checkFunction(fun string) bool {
-	for _, cfun := range AllowFunctionEnv {
-		if cfun == fun {
+func checkFunction(function string) bool {
+	for _, f := range AllowFunctionEnv {
+		if f == function {
 			return true
 		}
 	}
