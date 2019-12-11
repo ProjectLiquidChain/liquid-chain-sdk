@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"fmt"
+	"log"
 	"os/exec"
 )
 
@@ -9,15 +9,15 @@ func DeleteFile(file string) {
 	cmd := exec.Command("rm", file)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-	fmt.Print(string(out))
+	log.Print(string(out))
 }
 func DeleteFolder(folder string) {
 	cmd := exec.Command("rm", "-rf", folder)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
-	fmt.Print(string(out))
+	log.Print(string(out))
 }

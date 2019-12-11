@@ -1,43 +1,90 @@
 package tools
 
 import (
-	"fmt"
+	"encoding/json"
+	"io/ioutil"
+	"log"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"vs_value_set", "vs_value_get", "vs_value_size_get"}
+type AllowFunction struct {
+	Functions []string `json:"functions"`
+}
+
 var AllowImportWasi = "wasi_unstable"
 
-func checkFunction(fun string) bool {
-	for _, cfun := range AllowFunctionEnv {
-		if cfun == fun {
+func checkFunction(function string) bool {
+	jsonFile, _ := ioutil.ReadFile("./env/functions.json")
+	data := AllowFunction{}
+	_ = json.Unmarshal([]byte(jsonFile), &data)
+	for _, f := range data.Functions {
+		if f == function {
 			return true
 		}
 	}
 	return false
 }
 
-func CheckImportFunction(file string) bool {
+func checkEvent(event string, events []string) bool {
+	for _, e := range events {
+		if e == event {
+			return true
+		}
+	}
+	return false
+}
+
+func CheckImportFunction(file string, event_names []string) bool {
 	bytes, _ := wasm.ReadBytes(file)
 	var check = true
 	compiled, err := wasm.Compile(bytes)
 	if err != nil {
-		panic(err)
+		log.Fatalln(err)
 	}
 	importFunction := compiled.Imports
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
-			if fn.Namespace == "env" {
-				if !checkFunction(fn.Name) {
-					fmt.Println("error: function " + fn.Name + " not support!")
-					check = false
-				}
+			if fn.Namespace == "env" && !checkFunction(fn.Name) && !checkEvent(fn.Name, event_names) {
+				log.Println("error: function " + fn.Name + " not support!")
+				check = false
 			}
 		} else {
-			fmt.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
+			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")
 		}
 	}
-	fmt.Println("check done!")
+	log.Println("check done!")
 	return check
+}
+
+func getImportFunction(file string) []string {
+	list := []string{}
+
+	bytes, _ := wasm.ReadBytes(file)
+	compiled, err := wasm.Compile(bytes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	importFunction := compiled.Imports
+	for _, fn := range importFunction {
+		if fn.Namespace == "env" {
+			list = append(list, fn.Name)
+		}
+	}
+	return list
+}
+
+func getExportFunction(file string) []string {
+	list := []string{}
+
+	bytes, _ := wasm.ReadBytes(file)
+	compiled, err := wasm.Compile(bytes)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	exportFunction := compiled.Exports
+	for _, fn := range exportFunction {
+		list = append(list, fn.Name)
+	}
+	return list
 }

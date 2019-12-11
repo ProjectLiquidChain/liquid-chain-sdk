@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -12,69 +12,68 @@ import (
 
 var app = cli.NewApp()
 
-func info() {
+func init() {
 	app.Name = "smart contract development CLI"
-	app.Usage = "vertex-cdt [language option] compile [file]"
+	app.Usage = "vertex-cdt [option] [file] --export-function [functions]"
 	app.Version = "0.0.1"
 	app.Author = "vertex team"
-}
-func commands() {
 	app.Commands = []cli.Command{
 		{
-			Name:    "c++",
-			Aliases: []string{"c++"},
-			Usage:   "compile c++ language file",
-			Action: func(c *cli.Context) {
-				compile := tool.Compile{c.Args().First(), "c++"}
-				result := compile.Clang()
-				if tool.CheckImportFunction(result) {
-					tool.ABIgen(c.Args().First(), "c++")
-					fmt.Println("compile completed!")
-				} else {
-					utils.DeleteFile(result) // ? remove file .wasm
-				}
-			},
-		},
-		{
-			Name:    "c",
+			Name:    "compile",
 			Aliases: []string{"c"},
-			Usage:   "compile c language file",
+			Usage:   "compile c,c++ language file",
+			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
 			Action: func(c *cli.Context) {
-				compile := tool.Compile{c.Args().First(), "c"}
-				result := compile.Clang()
-				if tool.CheckImportFunction(result) {
-					tool.ABIgen(c.Args().First(), "c")
-					fmt.Println("compile completed!")
+				compile := tool.Compile{c.Args().First()}
+				wasmFile, nameFile := compile.Clang(c.String("export-function"))
+				abiFile, event_names := tool.ABIgen(c.Args().First(), nameFile, c.String("export-function"), wasmFile)
+				if tool.CheckImportFunction(wasmFile, event_names) {
+					log.Println("compile completed!")
 				} else {
-					utils.DeleteFile(result) // ? remove file .wasm
+					utils.DeleteFile(abiFile)
+					utils.DeleteFile(wasmFile)
 				}
 			},
 		},
 		{
-			Name:    "rust",
-			Aliases: []string{"r"},
-			Usage:   "compile rust language file",
+			Name:    "build",
+			Aliases: []string{"b"},
+			Usage:   "compile rust language folder",
 			Action: func(c *cli.Context) {
 				file := strings.Split(c.Args().First(), "/")
 				if file[len(file)-1] == "" {
 					file[len(file)-1] = file[len(file)-2]
 				}
-				compile := tool.Compile{c.Args().First(), "rust"}
-				compile.Rust()
-				if tool.CheckImportFunction(c.Args().First() + "/target/wasm32-wasi/debug/" + file[len(file)-1] + ".wasm") {
-					fmt.Println("compile completed!")
-				} else {
-					utils.DeleteFolder(c.Args().First() + "/target") // ? remove file .wasm
+				if strings.Contains(file[len(file)-1], "-") {
+					file[len(file)-1] = strings.ReplaceAll(file[len(file)-1], "-", "_")
 				}
+				compile := tool.Compile{c.Args().First()}
+				compile.Rust(file[len(file)-1] + ".wasm")
+				wasm_file := c.Args().First() + "/" + file[len(file)-1] + ".wasm"
+				abiFile, event_names := tool.ABIRust(c.Args().First()+"/src/lib.rs", file[len(file)-1], c.Args().First()+"/", wasm_file)
+				if tool.CheckImportFunction(wasm_file, event_names) {
+					log.Println("compile completed!")
+				} else {
+					utils.DeleteFile(c.Args().First() + file[len(file)-1] + ".wasm")
+					utils.DeleteFile(abiFile)
+				}
+			},
+		},
+		{
+			Name:    "init",
+			Aliases: []string{"r"},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "name, n"}},
+			Usage:   "create rust project",
+			Action: func(c *cli.Context) {
+				file := tool.Create(c.String("name"))
+				log.Println(file)
 			},
 		},
 	}
 }
 func main() {
-	info()
-	commands()
 	err := app.Run(os.Args)
 	if err != nil {
-		fmt.Println(err)
+		log.Fatalln(err)
 	}
 }
