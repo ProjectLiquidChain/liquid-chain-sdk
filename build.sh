@@ -44,6 +44,13 @@ else
     else
         echo "c2ffi exists."
         cd ../..
+        #install rust toolchain, choose option 1 to default install rust toolchain
+        if [ ! -x "$(command -v cargo)" ]
+        then
+            echo "rust toolchain not exit"
+            curl https://sh.rustup.rs -sSf | sh
+            rustup target add wasm32-wasi
+        fi
         # install vertex-cdt
         cd vertex-cdt && ./build.sh
         if [ ! -f "/usr/local/bin/vertex-cdt" ]
