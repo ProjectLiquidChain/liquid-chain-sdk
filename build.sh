@@ -49,6 +49,7 @@ else
         then
             echo "rust toolchain not exit"
             curl https://sh.rustup.rs -sSf | sh
+            source $HOME/.cargo/env
             rustup target add wasm32-wasi
         fi
         # install vertex-cdt
