@@ -1,24 +1,18 @@
 package tools
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"log"
 
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-type AllowFunction struct {
-	Functions []string `json:"functions"`
-}
+var AllowFunctionEnv = []string{"chain_storage_size_get", "chain_storage_get", "chain_storage_set",
+	"chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"}
 
 var AllowImportWasi = "wasi_unstable"
 
 func checkFunction(function string) bool {
-	jsonFile, _ := ioutil.ReadFile("./env/functions.json")
-	data := AllowFunction{}
-	_ = json.Unmarshal([]byte(jsonFile), &data)
-	for _, f := range data.Functions {
+	for _, f := range AllowFunctionEnv {
 		if f == function {
 			return true
 		}
