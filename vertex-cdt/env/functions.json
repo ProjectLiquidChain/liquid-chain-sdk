@@ -1,0 +1,4 @@
+{
+    "functions" : ["chain_storage_size_get", "chain_storage_get", "chain_storage_set",
+        "chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"]
+}
