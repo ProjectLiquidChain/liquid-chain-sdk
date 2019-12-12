@@ -12,8 +12,9 @@ fi
 # unzip and install wasi-sdk
 unzip wasi-sdk-7.0.zip
 
-if [ ! -d "/usr/local/opt/wasi-sdk/" ]
+if [ -d "/usr/local/opt/wasi-sdk/" ]
 then
+    echo "wasi-sdk exits"
     rm -rf /usr/local/opt/wasi-sdk/
 fi
 
