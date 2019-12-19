@@ -1,6 +1,11 @@
 package tools
 
-import "testing"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"testing"
+)
 
 func TestCovertRustType(t *testing.T) {
 	f32 := convertRustType("f32")
@@ -383,5 +388,20 @@ func TestParseRustFunction(t *testing.T) {
 	}
 	if function.Parameters[3].IsArray {
 		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
+	}
+}
+
+func TestParse(t *testing.T) {
+	jsonFile, _ := ioutil.ReadFile("./tests/contract-abi.json")
+	data := []CFunction{}
+	_ = json.Unmarshal([]byte(jsonFile), &data)
+	abi := parse("./tests/contract-abi.json", []string{"add"}, "./tests/contract.wasm")
+	if len(abi) > 0 {
+		t.Errorf("parse fail")
+	}
+	resultJson, _ := json.Marshal(data)
+	err := ioutil.WriteFile("./tests/contract-abi.json", resultJson, 0644)
+	if err != nil {
+		log.Println(err)
 	}
 }
