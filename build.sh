@@ -52,6 +52,7 @@ else
             curl https://sh.rustup.rs -sSf | sh
             source $HOME/.cargo/env
             rustup target add wasm32-wasi
+            rustup update nightly
         fi
         # install vertex-cdt
         cd vertex-cdt && ./build.sh
