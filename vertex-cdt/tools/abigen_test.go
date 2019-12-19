@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os/exec"
 	"testing"
 )
 
@@ -337,6 +338,17 @@ func TestParseRustEvent(t *testing.T) {
 	if event.Parameters[2].Type != vertex_event.Parameters[2].Type {
 		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, vertex_event.Parameters[2].Type)
 	}
+	event = parseRustEvent("fn ArrayTest(from: &[u8]) -> Event;")
+	if event.Name != "ArrayTest" {
+		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, "ArrayTest")
+	}
+	if event.Parameters[0].Name != "from" {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, "from")
+	}
+	if event.Parameters[0].Type != "array" {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "array")
+	}
+
 }
 
 func TestParseRustFunction(t *testing.T) {
@@ -403,5 +415,29 @@ func TestParse(t *testing.T) {
 	err := ioutil.WriteFile("./tests/contract-abi.json", resultJson, 0644)
 	if err != nil {
 		log.Println(err)
+	}
+}
+
+func TestABIRust(t *testing.T) {
+	jsonFile, events := ABIRust("./tests/add/src/lib.rs", "add", "./tests/add/", "./tests/add/add.wasm")
+	if jsonFile != "./tests/add/add-abi.json" {
+		t.Errorf("parse fail")
+	}
+	if events[0] != "Add" {
+		t.Errorf("parse event fail")
+	}
+}
+func TestABIgen(t *testing.T) {
+	jsonFile, events := ABIgen("./tests/contract.c", "contract", "add", "./tests/add/add.wasm")
+	if jsonFile != "contract-abi.json" {
+		t.Errorf("parse fail")
+	}
+	if events[0] != "Add" {
+		t.Errorf("parse event fail")
+	}
+	cmd := exec.Command("rm", "-rf", jsonFile)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Errorf("file not found")
 	}
 }
