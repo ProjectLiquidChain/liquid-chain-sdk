@@ -155,18 +155,22 @@ func TestParseFunction(t *testing.T) {
 		Parameters: []Parameter{
 			Parameter{
 				IsArray: false,
+				Name:    "x",
 				Type:    "int32",
 			},
 			Parameter{
 				IsArray: true,
+				Name:    "y",
 				Type:    "float32",
 			},
 			Parameter{
 				IsArray: false,
+				Name:    "z",
 				Type:    "address",
 			},
 			Parameter{
 				IsArray: false,
+				Name:    "t",
 				Type:    "uint32",
 			},
 		},
@@ -238,18 +242,21 @@ func TestParseEvent(t *testing.T) {
 	event := parseEvent("Transfer", params, "line 9")
 	vertex_event := Event{
 		Name: "Transfer",
-		Parameters: []EventParam{
-			EventParam{
-				Name: "from",
-				Type: "address",
+		Parameters: []Parameter{
+			Parameter{
+				Name:    "from",
+				IsArray: false,
+				Type:    "address",
 			},
-			EventParam{
-				Name: "to",
-				Type: "address",
+			Parameter{
+				Name:    "to",
+				IsArray: false,
+				Type:    "address",
 			},
-			EventParam{
-				Name: "amount",
-				Type: "uint64",
+			Parameter{
+				Name:    "amount",
+				IsArray: false,
+				Type:    "uint64",
 			},
 		},
 	}
@@ -302,18 +309,21 @@ func TestParseRustEvent(t *testing.T) {
 	event := parseRustEvent("fn Transfer(from: address, to: address, amount: u64) -> Event;")
 	vertex_event := Event{
 		Name: "Transfer",
-		Parameters: []EventParam{
-			EventParam{
-				Name: "from",
-				Type: "address",
+		Parameters: []Parameter{
+			Parameter{
+				IsArray: false,
+				Name:    "from",
+				Type:    "address",
 			},
-			EventParam{
-				Name: "to",
-				Type: "address",
+			Parameter{
+				IsArray: false,
+				Name:    "to",
+				Type:    "address",
 			},
-			EventParam{
-				Name: "amount",
-				Type: "uint64",
+			Parameter{
+				IsArray: false,
+				Name:    "amount",
+				Type:    "uint64",
 			},
 		},
 	}
