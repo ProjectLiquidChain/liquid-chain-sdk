@@ -1,6 +1,12 @@
 package tools
 
-import "testing"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"os/exec"
+	"testing"
+)
 
 func TestCovertRustType(t *testing.T) {
 	f32 := convertRustType("f32")
@@ -149,18 +155,22 @@ func TestParseFunction(t *testing.T) {
 		Parameters: []Parameter{
 			Parameter{
 				IsArray: false,
+				Name:    "x",
 				Type:    "int32",
 			},
 			Parameter{
 				IsArray: true,
+				Name:    "y",
 				Type:    "float32",
 			},
 			Parameter{
 				IsArray: false,
+				Name:    "z",
 				Type:    "address",
 			},
 			Parameter{
 				IsArray: false,
+				Name:    "t",
 				Type:    "uint32",
 			},
 		},
@@ -232,18 +242,21 @@ func TestParseEvent(t *testing.T) {
 	event := parseEvent("Transfer", params, "line 9")
 	vertex_event := Event{
 		Name: "Transfer",
-		Parameters: []EventParam{
-			EventParam{
-				Name: "from",
-				Type: "address",
+		Parameters: []Parameter{
+			Parameter{
+				Name:    "from",
+				IsArray: false,
+				Type:    "address",
 			},
-			EventParam{
-				Name: "to",
-				Type: "address",
+			Parameter{
+				Name:    "to",
+				IsArray: false,
+				Type:    "address",
 			},
-			EventParam{
-				Name: "amount",
-				Type: "uint64",
+			Parameter{
+				Name:    "amount",
+				IsArray: false,
+				Type:    "uint64",
 			},
 		},
 	}
@@ -296,18 +309,21 @@ func TestParseRustEvent(t *testing.T) {
 	event := parseRustEvent("fn Transfer(from: address, to: address, amount: u64) -> Event;")
 	vertex_event := Event{
 		Name: "Transfer",
-		Parameters: []EventParam{
-			EventParam{
-				Name: "from",
-				Type: "address",
+		Parameters: []Parameter{
+			Parameter{
+				IsArray: false,
+				Name:    "from",
+				Type:    "address",
 			},
-			EventParam{
-				Name: "to",
-				Type: "address",
+			Parameter{
+				IsArray: false,
+				Name:    "to",
+				Type:    "address",
 			},
-			EventParam{
-				Name: "amount",
-				Type: "uint64",
+			Parameter{
+				IsArray: false,
+				Name:    "amount",
+				Type:    "uint64",
 			},
 		},
 	}
@@ -332,6 +348,17 @@ func TestParseRustEvent(t *testing.T) {
 	if event.Parameters[2].Type != vertex_event.Parameters[2].Type {
 		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, vertex_event.Parameters[2].Type)
 	}
+	event = parseRustEvent("fn ArrayTest(from: &[u8]) -> Event;")
+	if event.Name != "ArrayTest" {
+		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, "ArrayTest")
+	}
+	if event.Parameters[0].Name != "from" {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, "from")
+	}
+	if event.Parameters[0].Type != "array" {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "array")
+	}
+
 }
 
 func TestParseRustFunction(t *testing.T) {
@@ -383,5 +410,44 @@ func TestParseRustFunction(t *testing.T) {
 	}
 	if function.Parameters[3].IsArray {
 		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
+	}
+}
+
+func TestParse(t *testing.T) {
+	jsonFile, _ := ioutil.ReadFile("./tests/contract-abi.json")
+	data := []CFunction{}
+	_ = json.Unmarshal([]byte(jsonFile), &data)
+	abi := parse("./tests/contract-abi.json", []string{"add"}, "./tests/contract.wasm")
+	if len(abi) > 0 {
+		t.Errorf("parse fail")
+	}
+	resultJson, _ := json.Marshal(data)
+	err := ioutil.WriteFile("./tests/contract-abi.json", resultJson, 0644)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func TestABIRust(t *testing.T) {
+	jsonFile, events := ABIRust("./tests/add/src/lib.rs", "add", "./tests/add/", "./tests/add/add.wasm")
+	if jsonFile != "./tests/add/add-abi.json" {
+		t.Errorf("parse fail")
+	}
+	if events[0] != "Add" {
+		t.Errorf("parse event fail")
+	}
+}
+func TestABIgen(t *testing.T) {
+	jsonFile, events := ABIgen("./tests/contract.c", "contract", "add", "./tests/add/add.wasm")
+	if jsonFile != "contract-abi.json" {
+		t.Errorf("parse fail")
+	}
+	if events[0] != "Add" {
+		t.Errorf("parse event fail")
+	}
+	cmd := exec.Command("rm", "-rf", jsonFile)
+	_, err := cmd.CombinedOutput()
+	if err != nil {
+		t.Errorf("file not found")
 	}
 }

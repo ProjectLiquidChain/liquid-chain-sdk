@@ -39,7 +39,7 @@ func (c *Compile) Clang(option string) (string, string) {
 			op += ",--export=" + cfun
 		}
 	}
-	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-O3", "-nostartfiles", TARGET, ALLOW_UNDEFINED, "-Wl"+op, SYS_WASI)
+	cmd := exec.Command(tool, c.File, "-o", wasmFile, "-O3", "-nostartfiles", "-fno-exceptions", TARGET, ALLOW_UNDEFINED, "-Wl"+op, SYS_WASI)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println(string(out))

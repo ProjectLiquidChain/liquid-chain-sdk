@@ -6,8 +6,10 @@ import (
 	wasm "github.com/wasmerio/go-ext-wasm/wasmer"
 )
 
-var AllowFunctionEnv = []string{"chain_storage_size_get", "chain_storage_get", "chain_storage_set",
-	"chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator", "chain_invoke", "chain_get_owner"}
+var AllowFunctionEnv = []string{"chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator",
+	"chain_invoke", "chain_get_owner", "chain_method_bind", "chain_arg_size_get", "chain_arg_size_set", "get_mean",
+	"sum_of_squares", "sqroot", "get_average", "address_xor", "chain_block_height", "chain_block_time", "chain_storage_set",
+	"chain_storage_size_get", "chain_storage_get"}
 
 var AllowImportWasi = "wasi_unstable"
 

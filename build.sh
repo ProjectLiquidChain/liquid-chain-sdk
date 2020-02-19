@@ -1,36 +1,32 @@
 # build vetex-sdk for smart contract
-if [ ! -f "/usr/local/bin/cmake" ]
-then
-    echo "cmake not exits"
-    brew install cmake
-fi
-if [ ! -d "/usr/local/Cellar/unzip" ]
-then
-    echo "unzip not exits"
-    brew install unzip
-fi
-# unzip and install wasi-sdk
-unzip wasi-sdk-7.0.zip
+build_mac () {
+    if [ ! -f "/usr/local/bin/cmake" ]
+    then
+        echo "cmake not exits"
+        brew install cmake
+    fi
+    if [ ! -d "/usr/local/Cellar/unzip" ]
+    then
+        echo "unzip not exits"
+        brew install unzip
+    fi
+    # unzip and install wasi-sdk
+    unzip wasi-sdk-7.0.zip
 
-if [ -d "/usr/local/opt/wasi-sdk/" ]
-then
-    echo "wasi-sdk exits"
-    rm -rf /usr/local/opt/wasi-sdk/
-fi
+    if [ -d "/usr/local/opt/wasi-sdk/" ]
+    then
+        echo "wasi-sdk exits"
+        rm -rf /usr/local/opt/wasi-sdk/
+    fi
 
-cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/
-rm -rf ./wasi-sdk-7.0
-# install llvm, require llvm version 9
-if [ ! -d "/usr/local/opt/llvm/" ]
-then
-    echo "llvm DOES NOT exists, install llvm: "
-    brew install llvm@9
-fi
-
-if [ ! -d "/usr/local/Cellar/llvm/9.0.0_1/lib/" ]
-then
-    echo "Directory /usr/local/Cellar/llvm/9.0.0_1/lib/ DOES NOT exists, please update llvm version"
-else
+    cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/
+    rm -rf ./wasi-sdk-7.0
+    # install llvm, require llvm version 9
+    if [ ! -d "/usr/local/opt/llvm/" ]
+    then
+        echo "llvm DOES NOT exists, install llvm: "
+        brew install llvm@9
+    fi
     # install c2ffi tool to support generate ABI from c, c++ langiage
     cd c2ffi/
     mkdir build
@@ -63,4 +59,18 @@ else
             echo "Build successful ! "
         fi
     fi
+}
+build_linux() {
+    ## need support
+    echo ""
+}
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    build_mac
+elif [[ "$OSTYPE" == "linux"* ]]; then
+    # Ubuntu OS,...
+    build_linux
+    echo "build in linux"
+else
+    echo "OS not support !"
 fi

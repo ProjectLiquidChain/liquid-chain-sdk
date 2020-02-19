@@ -1,0 +1,1 @@
+{"version":1,"events":[{"name":"Add","parameters":[{"is_array":false,"name":"x","type":"int32"},{"is_array":false,"name":"y","type":"int32"}]}],"functions":[{"name":"add","parameters":[{"is_array":false,"name":"x","type":"int32"},{"is_array":false,"name":"y","type":"int32"}]}]}
