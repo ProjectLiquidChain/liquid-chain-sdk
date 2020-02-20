@@ -83,7 +83,7 @@ vertex-cdt compile demo.c --export-function sum
 ```
 code demo in c++ demo.cpp
 ```c++
-#include <vertex.h>
+#include <vertex.cpp.h>
 WASI_EXPORT Event Add(int num1, int num2);
 WASI_EXPORT int sum(int num1, int num2){
    int num3 = num1+num2;
