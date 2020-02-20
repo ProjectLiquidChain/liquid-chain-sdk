@@ -26,13 +26,9 @@ type Function struct {
 	Name       string      `json:"name"`
 	Parameters []Parameter `json:"parameters"`
 }
-type Event struct {
-	Name       string      `json:"name"`
-	Parameters []Parameter `json:"parameters"`
-}
 type ABI struct {
 	Version   int        `json:"version"`
-	Events    []Event    `json:"events"`
+	Events    []Function `json:"events"`
 	Functions []Function `json:"functions"`
 }
 
@@ -88,7 +84,7 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 	result := ABI{}
 	result.Version = VERSION
 	functions := []Function{}
-	events := []Event{}
+	events := []Function{}
 	event_names := []string{}
 	import_func := getImportFunction(wasmfile)
 	export_func := getExportFunction(wasmfile)
@@ -178,7 +174,7 @@ func parseRustFunction(declFunction string) Function {
 	}
 	return Function{token(function_name[1]), function_params}
 }
-func parseRustEvent(declEvent string) Event {
+func parseRustEvent(declEvent string) Function {
 	event_params := []Parameter{}
 	name := strings.Split(declEvent, "(")
 	event_name := strings.Split(name[0], "fn")
@@ -195,7 +191,7 @@ func parseRustEvent(declEvent string) Event {
 		}
 		event_params = append(event_params, param_rust)
 	}
-	return Event{token(event_name[1]), event_params}
+	return Function{token(event_name[1]), event_params}
 }
 
 /*
@@ -241,7 +237,7 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 	result := ABI{}
 	result.Version = VERSION
 	functions := []Function{}
-	events := []Event{}
+	events := []Function{}
 	event_names := []string{}
 	function_name := []string{}
 	import_func := getImportFunction(wasmfile)
@@ -284,7 +280,7 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 }
 
 // parse to vertex event
-func parseEvent(name string, params []Cparam, location string) Event {
+func parseEvent(name string, params []Cparam, location string) Function {
 	event_params := []Parameter{}
 	for j := 0; j < len(params); j++ {
 		param := Parameter{false, params[j].Name, params[j].Type.Tag}
@@ -303,7 +299,7 @@ func parseEvent(name string, params []Cparam, location string) Event {
 		}
 		event_params = append(event_params, param)
 	}
-	return Event{name, event_params}
+	return Function{name, event_params}
 }
 
 // parse to vertex function

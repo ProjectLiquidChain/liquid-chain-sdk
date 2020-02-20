@@ -240,7 +240,7 @@ func TestParseEvent(t *testing.T) {
 		},
 	}
 	event := parseEvent("Transfer", params, "line 9")
-	vertex_event := Event{
+	vertex_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
@@ -307,7 +307,7 @@ func TestToken(t *testing.T) {
 
 func TestParseRustEvent(t *testing.T) {
 	event := parseRustEvent("fn Transfer(from: address, to: address, amount: u64) -> Event;")
-	vertex_event := Event{
+	vertex_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
