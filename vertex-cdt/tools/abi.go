@@ -11,7 +11,7 @@ import (
 )
 
 var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64",
-	"float32", "float64", "address"}
+	"float32", "float64", "address", "plarray"}
 
 const VERSION = 1
 const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
@@ -30,28 +30,6 @@ type ABI struct {
 	Version   int        `json:"version"`
 	Events    []Function `json:"events"`
 	Functions []Function `json:"functions"`
-}
-
-// type of c2ffi output
-type Ctype struct {
-	Tag  string `json:"tag"`
-	Type Type   `json:"type"`
-}
-type Cparam struct {
-	Tag  string `json:"tag"`
-	Name string `json:"name"`
-	Type Ctype  `json:"type"`
-}
-type CFunction struct {
-	Name       string   `json:"name"`
-	Parameters []Cparam `json:"parameters"`
-	Location   string   `json:"location"`
-	ReturnType Type     `json:"return-type"`
-	Tag        string   `json:"tag"`
-}
-type Type struct {
-	Tag  string `json:"tag"`
-	Type string `json:"type"`
 }
 
 /*
@@ -120,7 +98,7 @@ func ABIRust(file string, nameFile string, path string, wasmfile string) (string
 				block = false
 			}
 			if strings.Contains(code, ";") && strings.Contains(funcDecl, "Event") {
-				event := parseRustEvent(funcDecl)
+				event := parseRustFunction(funcDecl)
 				if checkAllowFunction(event.Name, import_func) {
 					event_names = append(event_names, event.Name)
 					events = append(events, event)
@@ -173,25 +151,6 @@ func parseRustFunction(declFunction string) Function {
 		function_params = append(function_params, param_rust)
 	}
 	return Function{token(function_name[1]), function_params}
-}
-func parseRustEvent(declEvent string) Function {
-	event_params := []Parameter{}
-	name := strings.Split(declEvent, "(")
-	event_name := strings.Split(name[0], "fn")
-	params := strings.Split(name[1], ")")
-	list_params := strings.Split(params[0], ",")
-	for _, param := range list_params {
-		rust_type := strings.Split(param, ":")
-		var param_rust Parameter
-		if strings.Contains(rust_type[1], "[") {
-			param_rust = Parameter{true, token(rust_type[0]), "array"}
-			log.Println("error: type array is not support in event parameter !")
-		} else {
-			param_rust = Parameter{false, token(rust_type[0]), convertRustType(token(rust_type[1]))}
-		}
-		event_params = append(event_params, param_rust)
-	}
-	return Function{token(event_name[1]), event_params}
 }
 
 /*
@@ -248,7 +207,7 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 		if data[i].ReturnType.Tag == "Event" {
 			if checkAllowFunction(data[i].Name, import_func) {
 				event_names = append(event_names, data[i].Name)
-				event := parseEvent(data[i].Name, data[i].Parameters, data[i].Location)
+				event := parseFunction(data[i].Name, data[i].Parameters, data[i].Location)
 				events = append(events, event)
 			} else {
 				log.Println("warning: "+data[i].Location, "Event "+data[i].Name+" is declared but not use!")
@@ -279,29 +238,6 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 	return event_names
 }
 
-// parse to vertex event
-func parseEvent(name string, params []Cparam, location string) Function {
-	event_params := []Parameter{}
-	for j := 0; j < len(params); j++ {
-		param := Parameter{false, params[j].Name, params[j].Type.Tag}
-		if params[j].Type.Tag[1:] == "array" || params[j].Type.Tag[1:] == "pointer" {
-			param.IsArray = true
-			log.Println(location, "variable "+params[j].Name, "warning: type array "+param.Type+" not support in event!")
-			param.Type = ""
-		} else if string(params[j].Type.Tag[0]) == ":" {
-			param.Type = convertType(params[j].Type.Tag[1:])
-		} else {
-			if params[j].Type.Tag == "address" {
-				param.Type = "address"
-			} else {
-				param.Type = params[j].Type.Tag[:len(param.Type)-2]
-			}
-		}
-		event_params = append(event_params, param)
-	}
-	return Function{name, event_params}
-}
-
 // parse to vertex function
 func parseFunction(name string, params []Cparam, location string) Function {
 	function_params := []Parameter{}
@@ -322,6 +258,8 @@ func parseFunction(name string, params []Cparam, location string) Function {
 			param.IsArray = false
 			if params[j].Type.Tag == "address" {
 				param.Type = "address"
+			} else if params[j].Type.Tag == "plarray" {
+				param.Type = "plarray"
 			} else {
 				param.Type = params[j].Type.Tag[:len(param.Type)-2]
 			}

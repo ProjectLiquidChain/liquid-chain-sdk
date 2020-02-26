@@ -239,7 +239,7 @@ func TestParseEvent(t *testing.T) {
 			},
 		},
 	}
-	event := parseEvent("Transfer", params, "line 9")
+	event := parseFunction("Transfer", params, "line 9")
 	vertex_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
@@ -306,7 +306,7 @@ func TestToken(t *testing.T) {
 }
 
 func TestParseRustEvent(t *testing.T) {
-	event := parseRustEvent("fn Transfer(from: address, to: address, amount: u64) -> Event;")
+	event := parseRustFunction("fn Transfer(from: address, to: address, amount: u64) -> Event;")
 	vertex_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
@@ -348,15 +348,15 @@ func TestParseRustEvent(t *testing.T) {
 	if event.Parameters[2].Type != vertex_event.Parameters[2].Type {
 		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, vertex_event.Parameters[2].Type)
 	}
-	event = parseRustEvent("fn ArrayTest(from: &[u8]) -> Event;")
+	event = parseRustFunction("fn ArrayTest(from: &[u8]) -> Event;")
 	if event.Name != "ArrayTest" {
 		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, "ArrayTest")
 	}
 	if event.Parameters[0].Name != "from" {
 		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, "from")
 	}
-	if event.Parameters[0].Type != "array" {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "array")
+	if event.Parameters[0].Type != "uint8" {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "uint8")
 	}
 
 }
