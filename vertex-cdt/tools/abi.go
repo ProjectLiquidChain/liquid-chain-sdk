@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"strings"
 )
 
@@ -14,7 +13,6 @@ var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16",
 	"float32", "float64", "address", "plarray"}
 
 const VERSION = 1
-const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
 
 // define type of ABI
 type Parameter struct {
@@ -33,22 +31,15 @@ type ABI struct {
 }
 
 /*
-	function ABIgen create json file
+	function ABI create json file
 	params:
 		- file: name of file c or c++
 		- language: c or c++
 		- option: export functions name
 		- wasmfile: name of file .wasm
 */
-func ABIgen(file string, nameFile string, option string, wasmfile string) (string, []string) {
-	jsonFile := nameFile + "-abi.json"
-	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
-	out, err := cmd.CombinedOutput()
-	// log.Println(string(out))
-	if err != nil {
-		log.Println(string(out))
-		log.Fatalln(err)
-	}
+func ABIC(file string, nameFile string, option string, wasmfile string) (string, []string) {
+	jsonFile := c2ffi(file, nameFile)
 	exportFunction := strings.Split(option, ",")
 	event_names := parse(jsonFile, exportFunction, wasmfile)
 	return jsonFile, event_names

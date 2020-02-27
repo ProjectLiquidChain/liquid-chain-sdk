@@ -1,5 +1,12 @@
 package tools
 
+import (
+	"log"
+	"os/exec"
+)
+
+const SYS_INCLUDE = "/usr/local/opt/wasi-sdk/share/wasi-sysroot/include"
+
 // type of c2ffi output
 type Ctype struct {
 	Tag  string `json:"tag"`
@@ -20,4 +27,23 @@ type CFunction struct {
 type Type struct {
 	Tag  string `json:"tag"`
 	Type string `json:"type"`
+}
+
+/*
+	function c2ffi create json file
+	params:
+		- file: name of file c or c++
+		- wasmfile: name of file .wasm
+*/
+func c2ffi(file string, nameFile string) string {
+	jsonFile := nameFile + "-abi.json"
+	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)
+	out, err := cmd.CombinedOutput()
+	// log.Println(string(out))
+	if err != nil {
+		log.Println(string(out))
+		log.Fatalln(err)
+		return ""
+	}
+	return jsonFile
 }

@@ -437,8 +437,8 @@ func TestABIRust(t *testing.T) {
 		t.Errorf("parse event fail")
 	}
 }
-func TestABIgen(t *testing.T) {
-	jsonFile, events := ABIgen("./tests/contract.c", "contract", "add", "./tests/add/add.wasm")
+func TestABIC(t *testing.T) {
+	jsonFile, events := ABIC("./tests/contract.c", "contract", "add", "./tests/add/add.wasm")
 	if jsonFile != "contract-abi.json" {
 		t.Errorf("parse fail")
 	}
