@@ -22,7 +22,7 @@ func init() {
 			Name:    "compile",
 			Aliases: []string{"c"},
 			Usage:   "compile c,c++ language file",
-			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, f"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First()}
 				wasmFile, nameFile := compile.Clang(c.String("export-function"))
