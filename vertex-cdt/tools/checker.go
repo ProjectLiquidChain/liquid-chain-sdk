@@ -42,8 +42,8 @@ func CheckImportFunction(file string, event_names []string) bool {
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
 			if fn.Namespace == "env" && !checkFunction(fn.Name) && !checkEvent(fn.Name, event_names) {
-				log.Println("error: function " + fn.Name + " not support!")
-				check = false
+				log.Println("warning: function " + fn.Name + " not support!")
+				check = true
 			}
 		} else {
 			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")

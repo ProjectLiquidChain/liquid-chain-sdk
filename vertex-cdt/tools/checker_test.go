@@ -110,7 +110,7 @@ func TestCheckImportFunctions(t *testing.T) {
 		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}
 	check = CheckImportFunction("./tests/vertex_contract.wasm", []string{"Mint"})
-	if check {
-		t.Errorf("funtion was not found, got: %t, want: %t.", true, false)
+	if !check {
+		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}
 }
