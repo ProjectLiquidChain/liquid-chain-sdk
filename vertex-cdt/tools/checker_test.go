@@ -3,39 +3,43 @@ package tools
 import "testing"
 
 func TestCheckAllowFucntion(t *testing.T) {
-	checker := checkFunction("test1")
+	var AllowFunctionEnv = []string{"chain_print_bytes", "chain_event_emit", "chain_get_caller", "chain_get_creator",
+		"chain_invoke", "chain_get_owner", "chain_method_bind", "chain_arg_size_get", "chain_arg_size_set", "get_mean",
+		"sum_of_squares", "sqroot", "get_average", "address_xor", "chain_block_height", "chain_block_time", "chain_storage_set",
+		"chain_storage_size_get", "chain_storage_get"}
+	checker := checkAllowFunction("test1", AllowFunctionEnv)
 	if checker {
 		t.Errorf("function was not allow, got: %t, want: %t.", checker, false)
 	}
-	checker = checkFunction("torage_size_get")
+	checker = checkAllowFunction("torage_size_get", AllowFunctionEnv)
 	if checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, false)
 	}
-	checker = checkFunction("chain_storage_size_get")
+	checker = checkAllowFunction("chain_storage_size_get", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_storage_get")
+	checker = checkAllowFunction("chain_storage_get", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_storage_set")
+	checker = checkAllowFunction("chain_storage_set", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_get_caller")
+	checker = checkAllowFunction("chain_get_caller", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_get_creator")
+	checker = checkAllowFunction("chain_get_creator", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_get_owner")
+	checker = checkAllowFunction("chain_get_owner", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}
-	checker = checkFunction("chain_event_emit")
+	checker = checkAllowFunction("chain_event_emit", AllowFunctionEnv)
 	if !checker {
 		t.Errorf("function was allow, got: %t, want: %t.", checker, true)
 	}

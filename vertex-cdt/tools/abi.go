@@ -9,9 +9,6 @@ import (
 	"strings"
 )
 
-var allowType = []string{"uint8", "uint16", "uint32", "uint64", "int8", "int16", "int32", "int64",
-	"float32", "float64", "address", "plarray"}
-
 const VERSION = 1
 
 // define type of ABI
@@ -145,35 +142,6 @@ func parseRustFunction(declFunction string) Function {
 }
 
 /*
-	function checkAllowType : check vertex VM type.
-	params:
-		- atype: c or c++ type
-*/
-func checkAllowType(atype string) bool {
-	for _, ctype := range allowType {
-		if ctype == atype {
-			return true
-		}
-	}
-	return false
-}
-
-/*
-	function checkAllowFunction: check the export functions
-	params:
-		- function
-		- allowFunction: list export functions or events
-*/
-func checkAllowFunction(function string, allowFunction []string) bool {
-	for _, fn := range allowFunction {
-		if fn == function {
-			return true
-		}
-	}
-	return false
-}
-
-/*
 	function parse: parse from c2ffi functions to vertex abi functions and events
 	params:
 		- file : name of c2ffi json file
@@ -182,35 +150,35 @@ func checkAllowFunction(function string, allowFunction []string) bool {
 */
 func parse(file string, exportFunction []string, wasmfile string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
-	data := []CFunction{}
-	_ = json.Unmarshal([]byte(jsonFile), &data)
+	decls := []CFunction{}
+	_ = json.Unmarshal([]byte(jsonFile), &decls)
 	result := ABI{}
 	result.Version = VERSION
 	functions := []Function{}
 	events := []Function{}
-	event_names := []string{}
-	function_name := []string{}
+	eventNames := []string{}
+	functionName := []string{}
 	import_func := getImportFunction(wasmfile)
-	for i := 0; i < len(data); i++ {
-		if data[i].Tag != "function" {
+	for _, decl := range decls {
+		if decl.Tag != "function" {
 			continue
 		}
-		if data[i].ReturnType.Tag == "Event" {
-			if checkAllowFunction(data[i].Name, import_func) {
-				event_names = append(event_names, data[i].Name)
-				event := parseFunction(data[i].Name, data[i].Parameters, data[i].Location)
+		if decl.ReturnType.Tag == Event {
+			if checkAllowFunction(decl.Name, import_func) {
+				eventNames = append(eventNames, decl.Name)
+				event := parseFunction(decl.Name, decl.Parameters, decl.Location)
 				events = append(events, event)
 			} else {
-				log.Println("warning: "+data[i].Location, "Event "+data[i].Name+" is declared but not use!")
+				log.Println("warning: "+decl.Location, "Event "+decl.Name+" is declared but not use!")
 			}
 			continue
 		}
-		function_name = append(function_name, data[i].Name)
-		if !checkAllowFunction(data[i].Name, exportFunction) {
+		functionName = append(functionName, decl.Name)
+		if !checkAllowFunction(decl.Name, exportFunction) {
 			continue
 		}
 
-		function := parseFunction(data[i].Name, data[i].Parameters, data[i].Location)
+		function := parseFunction(decl.Name, decl.Parameters, decl.Location)
 		functions = append(functions, function)
 	}
 	result.Functions = functions
@@ -222,101 +190,43 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 	}
 	// warning function not found
 	for _, fn := range exportFunction {
-		if !checkAllowFunction(fn, function_name) {
+		if !checkAllowFunction(fn, functionName) {
 			log.Println("warning: ", "export function "+fn+" not found!")
 		}
 	}
-	return event_names
+	return eventNames
 }
 
 // parse to vertex function
-func parseFunction(name string, params []Cparam, location string) Function {
-	function_params := []Parameter{}
-	for j := 0; j < len(params); j++ {
-		param := Parameter{false, params[j].Name, params[j].Type.Tag}
-		if params[j].Type.Tag[1:] == "array" || params[j].Type.Tag[1:] == "pointer" {
+func parseFunction(name string, cparams []Cparam, location string) Function {
+	params := []Parameter{}
+	for _, cparam := range cparams {
+		param := Parameter{false, cparam.Name, cparam.Type.Tag}
+		if cparam.Type.Tag[1:] == Array || cparam.Type.Tag[1:] == Pointer {
 			param.IsArray = true
-			param.Type = params[j].Type.Type.Tag
-			if string(params[j].Type.Type.Tag[0]) == ":" {
+			param.Type = cparam.Type.Type.Tag
+			if string(cparam.Type.Type.Tag[0]) == ":" {
 				param.Type = convertType(param.Type[1:])
 			} else {
-				param.Type = params[j].Type.Type.Tag[:len(param.Type)-2]
+				param.Type = cparam.Type.Type.Tag[:len(param.Type)-2]
 			}
-		} else if string(params[j].Type.Tag[0]) == ":" {
+		} else if string(cparam.Type.Tag[0]) == ":" {
 			param.IsArray = false
-			param.Type = convertType(params[j].Type.Tag[1:])
+			param.Type = convertType(cparam.Type.Tag[1:])
 		} else {
 			param.IsArray = false
-			if params[j].Type.Tag == "address" {
-				param.Type = "address"
-			} else if params[j].Type.Tag == "plarray" {
-				param.Type = "plarray"
+			if cparam.Type.Tag == Address {
+				param.Type = Address
+			} else if cparam.Type.Tag == PlArray {
+				param.Type = PlArray
 			} else {
-				param.Type = params[j].Type.Tag[:len(param.Type)-2]
+				param.Type = cparam.Type.Tag[:len(param.Type)-2]
 			}
 		}
-		if !checkAllowType(param.Type) {
-			log.Println(location, "variable "+params[j].Name, "warning: type "+param.Type+" not support!")
+		if !validateType(param.Type) {
+			log.Println(location, "variable "+cparam.Name, "warning: type "+param.Type+" not support!")
 		}
-		function_params = append(function_params, param)
+		params = append(params, param)
 	}
-	return Function{name, function_params}
-}
-
-// convert from c,c++ type to assembly vertex type
-func convertType(Type string) string {
-	switch Type {
-	case "float":
-		return "float32"
-	case "double":
-		return "float64"
-	case "signed-char":
-		return "int8"
-	case "char":
-		return "int8"
-	case "unsigned-char":
-		return "uint8"
-	case "short":
-		return "int16"
-	case "unsigned-short":
-		return "uint16"
-	case "int":
-		return "int32"
-	case "unsigned-int":
-		return "uint32"
-	case "unsigned-long":
-		return "uint32"
-	case "long-long":
-		return "int64"
-	case "unsigned-long-long":
-		return "uint64"
-	default:
-		return Type
-	}
-}
-func convertRustType(Type string) string {
-	switch Type {
-	case "f32":
-		return "float32"
-	case "f64":
-		return "float64"
-	case "i8":
-		return "int8"
-	case "u8":
-		return "uint8"
-	case "i16":
-		return "int16"
-	case "u16":
-		return "uint16"
-	case "i32":
-		return "int32"
-	case "u32":
-		return "uint32"
-	case "i64":
-		return "int64"
-	case "u64":
-		return "uint64"
-	default:
-		return Type
-	}
+	return Function{name, params}
 }
