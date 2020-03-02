@@ -22,11 +22,11 @@ func init() {
 			Name:    "compile",
 			Aliases: []string{"c"},
 			Usage:   "compile c,c++ language file",
-			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, ef"}},
+			Flags:   []cli.Flag{cli.StringFlag{Name: "export-function, f"}},
 			Action: func(c *cli.Context) {
 				compile := tool.Compile{c.Args().First()}
 				wasmFile, nameFile := compile.Clang(c.String("export-function"))
-				abiFile, event_names := tool.ABIgen(c.Args().First(), nameFile, c.String("export-function"), wasmFile)
+				abiFile, event_names := tool.ABIC(c.Args().First(), nameFile, c.String("export-function"), wasmFile)
 				if tool.CheckImportFunction(wasmFile, event_names) {
 					log.Println("compile completed!")
 				} else {

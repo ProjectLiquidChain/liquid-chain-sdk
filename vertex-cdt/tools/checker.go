@@ -13,9 +13,9 @@ var AllowFunctionEnv = []string{"chain_print_bytes", "chain_event_emit", "chain_
 
 var AllowImportWasi = "wasi_unstable"
 
-func checkFunction(function string) bool {
-	for _, f := range AllowFunctionEnv {
-		if f == function {
+func checkAllowFunction(function string, allowFunction []string) bool {
+	for _, fn := range allowFunction {
+		if fn == function {
 			return true
 		}
 	}
@@ -41,9 +41,9 @@ func CheckImportFunction(file string, event_names []string) bool {
 	importFunction := compiled.Imports
 	for _, fn := range importFunction {
 		if fn.Namespace != AllowImportWasi {
-			if fn.Namespace == "env" && !checkFunction(fn.Name) && !checkEvent(fn.Name, event_names) {
-				log.Println("error: function " + fn.Name + " not support!")
-				check = false
+			if fn.Namespace == "env" && !checkAllowFunction(fn.Name, AllowFunctionEnv) && !checkEvent(fn.Name, event_names) {
+				log.Println("warning: function " + fn.Name + " not support!")
+				check = true
 			}
 		} else {
 			log.Println("warning env: " + fn.Namespace + " ,function " + fn.Name + " not support!")

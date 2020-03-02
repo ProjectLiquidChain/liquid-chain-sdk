@@ -39,11 +39,11 @@ GLOBAL OPTIONS:
 ### Compile to WebAssembly
 C language
 ```bash
-vertex-cdt compile <file .c> --export-function <functions name>
+vertex-cdt compile <file .c> --export-function (-f) <functions name>
 ```
  C++ language
 ```bash
-vertex-cdt compile <file .cpp> --export-function <functions name>
+vertex-cdt compile <file .cpp> --export-function (-f) <functions name>
 ```
 rust language
 ```bash
