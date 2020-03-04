@@ -29,12 +29,6 @@ type Type struct {
 	Type string `json:"type"`
 }
 
-/*
-	function c2ffi create json file
-	params:
-		- file: name of file c or c++
-		- wasmfile: name of file .wasm
-*/
 func c2ffi(file string, nameFile string) string {
 	jsonFile := nameFile + "-abi.json"
 	cmd := exec.Command("c2ffi", "-o", jsonFile, file, "--sys-include", SYS_INCLUDE)

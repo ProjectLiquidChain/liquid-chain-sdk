@@ -27,14 +27,6 @@ type ABI struct {
 	Functions []Function `json:"functions"`
 }
 
-/*
-	function ABI create json file
-	params:
-		- file: name of file c or c++
-		- language: c or c++
-		- option: export functions name
-		- wasmfile: name of file .wasm
-*/
 func ABIC(file string, nameFile string, option string, wasmfile string) (string, []string) {
 	jsonFile := c2ffi(file, nameFile)
 	exportFunction := strings.Split(option, ",")
@@ -141,13 +133,6 @@ func parseRustFunction(declFunction string) Function {
 	return Function{token(function_name[1]), function_params}
 }
 
-/*
-	function parse: parse from c2ffi functions to vertex abi functions and events
-	params:
-		- file : name of c2ffi json file
-		- exportFunction: list export function
-		- wasmfile: name of wasm file
-*/
 func parse(file string, exportFunction []string, wasmfile string) []string {
 	jsonFile, _ := ioutil.ReadFile(file)
 	decls := []CFunction{}
@@ -217,8 +202,8 @@ func parseFunction(name string, cparams []Cparam, location string) Function {
 			param.IsArray = false
 			if cparam.Type.Tag == Address {
 				param.Type = Address
-			} else if cparam.Type.Tag == PlArray {
-				param.Type = PlArray
+			} else if cparam.Type.Tag == LpArray {
+				param.Type = LpArray
 			} else {
 				param.Type = cparam.Type.Tag[:len(param.Type)-2]
 			}

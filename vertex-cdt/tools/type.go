@@ -15,7 +15,7 @@ const (
 	Event   string = "Event"
 	Array   string = "array"
 	Pointer string = "pointer"
-	PlArray string = "plarray"
+	LpArray string = "lparray"
 )
 
 /*
@@ -25,7 +25,8 @@ const (
 */
 func validateType(Type string) bool {
 	switch Type {
-	case Int8, Uint8, Int16, Uint16, Int32, Uint32, Int64, Uint64, Float32, Float64, Address, PlArray:
+	case Int8, Uint8, Int16, Uint16, Int32, Uint32,
+		Int64, Uint64, Float32, Float64, Address, LpArray:
 		return true
 	default:
 		return false
@@ -36,29 +37,29 @@ func validateType(Type string) bool {
 func convertType(Type string) string {
 	switch Type {
 	case "float":
-		return "float32"
+		return Float32
 	case "double":
-		return "float64"
+		return Float64
 	case "signed-char":
-		return "int8"
+		return Int8
 	case "char":
-		return "int8"
+		return Int8
 	case "unsigned-char":
-		return "uint8"
+		return Uint8
 	case "short":
-		return "int16"
+		return Int16
 	case "unsigned-short":
-		return "uint16"
+		return Uint16
 	case "int":
-		return "int32"
+		return Int32
 	case "unsigned-int":
-		return "uint32"
+		return Uint32
 	case "unsigned-long":
-		return "uint32"
+		return Uint32
 	case "long-long":
-		return "int64"
+		return Int64
 	case "unsigned-long-long":
-		return "uint64"
+		return Uint64
 	default:
 		return Type
 	}
@@ -66,25 +67,25 @@ func convertType(Type string) string {
 func convertRustType(Type string) string {
 	switch Type {
 	case "f32":
-		return "float32"
+		return Float32
 	case "f64":
-		return "float64"
+		return Float64
 	case "i8":
-		return "int8"
+		return Int8
 	case "u8":
-		return "uint8"
+		return Uint8
 	case "i16":
-		return "int16"
+		return Int16
 	case "u16":
-		return "uint16"
+		return Uint16
 	case "i32":
-		return "int32"
+		return Int32
 	case "u32":
-		return "uint32"
+		return Uint32
 	case "i64":
-		return "int64"
+		return Int64
 	case "u64":
-		return "uint64"
+		return Uint64
 	default:
 		return Type
 	}
