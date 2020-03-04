@@ -3,12 +3,29 @@ use byteorder::{ByteOrder, LittleEndian};
 extern crate libc;
 pub type address =  *const u8;
 pub type Event = i32;
+type pointer =  *mut u8;
+pub type lparray =  *mut pointer;
 extern {
    fn chain_storage_size_get(key: *const u8, length: u8 ) -> usize;
    fn chain_get_caller(caller: address) ;
    fn chain_get_creator(creator: address);
    fn chain_storage_get(key: *const u8, length: u8, value: *const u8) -> *const u8 ;
    fn chain_storage_set(key: *const u8, key_size: u8, value: *const u8, value_size: u8) ;
+}
+
+unsafe fn set(data: *mut pointer, offset: usize, value: *mut u8) {
+    let ptr = data.offset(offset as isize) as *mut pointer;
+    *ptr = value;
+}
+
+pub fn to_lparray (s: &[u8]) -> lparray {
+    unsafe {
+        let result = libc::malloc(2 * mem::size_of::<*mut pointer>()) as *mut pointer;
+        let len = s.len();
+        set(result,0, len as *mut u8);
+        set(result,1, s.as_ptr() as *mut u8);
+        return result
+    }
 }
 
 pub fn get_caller() -> address {
