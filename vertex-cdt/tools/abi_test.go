@@ -60,24 +60,20 @@ func TestParseFunction(t *testing.T) {
 		Name: "add",
 		Parameters: []Parameter{
 			Parameter{
-				IsArray: false,
-				Name:    "x",
-				Type:    "int32",
+				Name: "x",
+				Type: "int32",
 			},
 			Parameter{
-				IsArray: true,
-				Name:    "y",
-				Type:    "float32",
+				Name: "y",
+				Type: "float32[]",
 			},
 			Parameter{
-				IsArray: false,
-				Name:    "z",
-				Type:    "address",
+				Name: "z",
+				Type: "address",
 			},
 			Parameter{
-				IsArray: false,
-				Name:    "t",
-				Type:    "uint32",
+				Name: "t",
+				Type: "uint32",
 			},
 		},
 	}
@@ -87,27 +83,27 @@ func TestParseFunction(t *testing.T) {
 	if function.Parameters[0].Type != vertex_function.Parameters[0].Type {
 		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, vertex_function.Parameters[0].Type)
 	}
-	if function.Parameters[0].IsArray {
-		t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
-	}
+	// if function.Parameters[0].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
+	// }
 	if function.Parameters[1].Type != vertex_function.Parameters[1].Type {
 		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, vertex_function.Parameters[1].Type)
 	}
-	if !function.Parameters[1].IsArray {
-		t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
-	}
+	// if !function.Parameters[1].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
+	// }
 	if function.Parameters[2].Type != vertex_function.Parameters[2].Type {
 		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, vertex_function.Parameters[2].Type)
 	}
-	if function.Parameters[2].IsArray {
-		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
-	}
+	// if function.Parameters[2].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
+	// }
 	if function.Parameters[3].Type != vertex_function.Parameters[3].Type {
 		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, vertex_function.Parameters[3].Type)
 	}
-	if function.Parameters[3].IsArray {
-		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
-	}
+	// if function.Parameters[3].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
+	// }
 }
 func TestParseEvent(t *testing.T) {
 	params := []Cparam{
@@ -150,19 +146,16 @@ func TestParseEvent(t *testing.T) {
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
-				Name:    "from",
-				IsArray: false,
-				Type:    "address",
+				Name: "from",
+				Type: "address",
 			},
 			Parameter{
-				Name:    "to",
-				IsArray: false,
-				Type:    "address",
+				Name: "to",
+				Type: "address",
 			},
 			Parameter{
-				Name:    "amount",
-				IsArray: false,
-				Type:    "uint64",
+				Name: "amount",
+				Type: "uint64",
 			},
 		},
 	}
@@ -202,19 +195,16 @@ func TestParseRustEvent(t *testing.T) {
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
-				IsArray: false,
-				Name:    "from",
-				Type:    "address",
+				Name: "from",
+				Type: "address",
 			},
 			Parameter{
-				IsArray: false,
-				Name:    "to",
-				Type:    "address",
+				Name: "to",
+				Type: "address",
 			},
 			Parameter{
-				IsArray: false,
-				Name:    "amount",
-				Type:    "uint64",
+				Name: "amount",
+				Type: "uint64",
 			},
 		},
 	}
@@ -246,8 +236,8 @@ func TestParseRustEvent(t *testing.T) {
 	if event.Parameters[0].Name != "from" {
 		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, "from")
 	}
-	if event.Parameters[0].Type != "uint8" {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "uint8")
+	if event.Parameters[0].Type != "uint8[]" {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, "uint8[]")
 	}
 
 }
@@ -258,20 +248,16 @@ func TestParseRustFunction(t *testing.T) {
 		Name: "add",
 		Parameters: []Parameter{
 			Parameter{
-				IsArray: false,
-				Type:    "int32",
+				Type: "int32",
 			},
 			Parameter{
-				IsArray: true,
-				Type:    "float32",
+				Type: "float32[]",
 			},
 			Parameter{
-				IsArray: false,
-				Type:    "address",
+				Type: "address",
 			},
 			Parameter{
-				IsArray: false,
-				Type:    "uint32",
+				Type: "uint32",
 			},
 		},
 	}
@@ -281,27 +267,27 @@ func TestParseRustFunction(t *testing.T) {
 	if function.Parameters[0].Type != vertex_function.Parameters[0].Type {
 		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, vertex_function.Parameters[0].Type)
 	}
-	if function.Parameters[0].IsArray {
-		t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
-	}
+	// if function.Parameters[0].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
+	// }
 	if function.Parameters[1].Type != vertex_function.Parameters[1].Type {
 		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, vertex_function.Parameters[1].Type)
 	}
-	if !function.Parameters[1].IsArray {
-		t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
-	}
+	// if !function.Parameters[1].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
+	// }
 	if function.Parameters[2].Type != vertex_function.Parameters[2].Type {
 		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, vertex_function.Parameters[2].Type)
 	}
-	if function.Parameters[2].IsArray {
-		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
-	}
+	// if function.Parameters[2].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
+	// }
 	if function.Parameters[3].Type != vertex_function.Parameters[3].Type {
 		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, vertex_function.Parameters[3].Type)
 	}
-	if function.Parameters[3].IsArray {
-		t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
-	}
+	// if function.Parameters[3].IsArray {
+	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
+	// }
 }
 
 func TestParse(t *testing.T) {

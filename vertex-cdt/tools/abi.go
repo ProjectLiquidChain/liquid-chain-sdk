@@ -13,9 +13,8 @@ const VERSION = 1
 
 // define type of ABI
 type Parameter struct {
-	IsArray bool   `json:"is_array"`
-	Name    string `json:"name"`
-	Type    string `json:"type"`
+	Name string `json:"name"`
+	Type string `json:"type"`
 }
 type Function struct {
 	Name       string      `json:"name"`
@@ -124,9 +123,9 @@ func parseRustFunction(declFunction string) Function {
 			array = strings.Replace(array, "[", "", -1)
 			array = strings.Replace(array, "]", "", -1)
 			array_type := strings.Split(array, ";")
-			param_rust = Parameter{true, token(rust_type[0]), convertRustType(array_type[0])}
+			param_rust = Parameter{token(rust_type[0]), convertRustType(array_type[0]) + "[]"}
 		} else {
-			param_rust = Parameter{false, token(rust_type[0]), convertRustType(token(rust_type[1]))}
+			param_rust = Parameter{token(rust_type[0]), convertRustType(token(rust_type[1]))}
 		}
 		function_params = append(function_params, param_rust)
 	}
@@ -186,20 +185,17 @@ func parse(file string, exportFunction []string, wasmfile string) []string {
 func parseFunction(name string, cparams []Cparam, location string) Function {
 	params := []Parameter{}
 	for _, cparam := range cparams {
-		param := Parameter{false, cparam.Name, cparam.Type.Tag}
+		param := Parameter{cparam.Name, cparam.Type.Tag}
 		if cparam.Type.Tag[1:] == Array || cparam.Type.Tag[1:] == Pointer {
-			param.IsArray = true
 			param.Type = cparam.Type.Type.Tag
 			if string(cparam.Type.Type.Tag[0]) == ":" {
-				param.Type = convertType(param.Type[1:])
+				param.Type = convertType(param.Type[1:]) + "[]"
 			} else {
-				param.Type = cparam.Type.Type.Tag[:len(param.Type)-2]
+				param.Type = cparam.Type.Type.Tag[:len(param.Type)-2] + "[]"
 			}
 		} else if string(cparam.Type.Tag[0]) == ":" {
-			param.IsArray = false
 			param.Type = convertType(cparam.Type.Tag[1:])
 		} else {
-			param.IsArray = false
 			if cparam.Type.Tag == Address {
 				param.Type = Address
 			} else if cparam.Type.Tag == LpArray {
