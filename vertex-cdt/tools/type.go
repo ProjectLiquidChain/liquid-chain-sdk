@@ -1,5 +1,7 @@
 package tools
 
+import "strings"
+
 const (
 	Uint8   string = "uint8"
 	Int8    string = "int8"
@@ -24,6 +26,9 @@ const (
 		- atype: c or c++ type
 */
 func validateType(Type string) bool {
+	if strings.Contains(Type, "[]") {
+		Type = Type[:len(Type)-2]
+	}
 	switch Type {
 	case Int8, Uint8, Int16, Uint16, Int32, Uint32,
 		Int64, Uint64, Float32, Float64, Address, LpArray:
