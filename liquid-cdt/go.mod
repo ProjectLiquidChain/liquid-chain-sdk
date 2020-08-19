@@ -1,4 +1,4 @@
-module github.com/QuoineFinancial/vertex-sdk/vertex-cdt
+module github.com/QuoineFinancial/liquid-chain-sdk/liquid-cdt
 
 go 1.12
 
