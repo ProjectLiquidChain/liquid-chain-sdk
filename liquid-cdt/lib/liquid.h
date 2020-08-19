@@ -19,7 +19,7 @@ extern void chain_event_emit(byte_t*);
 extern void chain_get_caller(byte_t*);
 extern void chain_get_creator(byte_t*);
 extern byte_t* chain_invoke(byte_t*, byte_t* params);
-lparray to_lparray(char s[]) {
+lparray to_lparray(uint8_t s[]) {
   lparray result = (lparray) malloc(2 * sizeof(pointer));
   result[0] = (pointer)strlen(s);
   result[1] = (pointer)s;

@@ -1,5 +1,5 @@
-extern crate vertex_lib;
-use vertex_lib::*;
+extern crate liquid_chain;
+use liquid_chain::*;
 
 // declare event
 extern {

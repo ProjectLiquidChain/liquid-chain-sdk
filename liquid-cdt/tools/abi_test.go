@@ -56,7 +56,7 @@ func TestParseFunction(t *testing.T) {
 		},
 	}
 	function := parseFunction("add", params, "line 19")
-	vertex_function := Function{
+	liquid_function := Function{
 		Name: "add",
 		Parameters: []Parameter{
 			Parameter{
@@ -77,29 +77,29 @@ func TestParseFunction(t *testing.T) {
 			},
 		},
 	}
-	if function.Name != vertex_function.Name {
-		t.Errorf("function was incorrect name, got: %s, want: %s.", function.Name, vertex_function.Name)
+	if function.Name != liquid_function.Name {
+		t.Errorf("function was incorrect name, got: %s, want: %s.", function.Name, liquid_function.Name)
 	}
-	if function.Parameters[0].Type != vertex_function.Parameters[0].Type {
-		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, vertex_function.Parameters[0].Type)
+	if function.Parameters[0].Type != liquid_function.Parameters[0].Type {
+		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, liquid_function.Parameters[0].Type)
 	}
 	// if function.Parameters[0].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
 	// }
-	if function.Parameters[1].Type != vertex_function.Parameters[1].Type {
-		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, vertex_function.Parameters[1].Type)
+	if function.Parameters[1].Type != liquid_function.Parameters[1].Type {
+		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, liquid_function.Parameters[1].Type)
 	}
 	// if !function.Parameters[1].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
 	// }
-	if function.Parameters[2].Type != vertex_function.Parameters[2].Type {
-		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, vertex_function.Parameters[2].Type)
+	if function.Parameters[2].Type != liquid_function.Parameters[2].Type {
+		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, liquid_function.Parameters[2].Type)
 	}
 	// if function.Parameters[2].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
 	// }
-	if function.Parameters[3].Type != vertex_function.Parameters[3].Type {
-		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, vertex_function.Parameters[3].Type)
+	if function.Parameters[3].Type != liquid_function.Parameters[3].Type {
+		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, liquid_function.Parameters[3].Type)
 	}
 	// if function.Parameters[3].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
@@ -142,7 +142,7 @@ func TestParseEvent(t *testing.T) {
 		},
 	}
 	event := parseFunction("Transfer", params, "line 9")
-	vertex_event := Function{
+	liquid_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
@@ -159,26 +159,26 @@ func TestParseEvent(t *testing.T) {
 			},
 		},
 	}
-	if event.Name != vertex_event.Name {
-		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, vertex_event.Name)
+	if event.Name != liquid_event.Name {
+		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, liquid_event.Name)
 	}
-	if event.Parameters[0].Name != vertex_event.Parameters[0].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, vertex_event.Parameters[0].Name)
+	if event.Parameters[0].Name != liquid_event.Parameters[0].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, liquid_event.Parameters[0].Name)
 	}
-	if event.Parameters[0].Type != vertex_event.Parameters[0].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, vertex_event.Parameters[0].Type)
+	if event.Parameters[0].Type != liquid_event.Parameters[0].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, liquid_event.Parameters[0].Type)
 	}
-	if event.Parameters[1].Name != vertex_event.Parameters[1].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[1].Name, vertex_event.Parameters[1].Name)
+	if event.Parameters[1].Name != liquid_event.Parameters[1].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[1].Name, liquid_event.Parameters[1].Name)
 	}
-	if event.Parameters[1].Type != vertex_event.Parameters[1].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[1].Type, vertex_event.Parameters[1].Type)
+	if event.Parameters[1].Type != liquid_event.Parameters[1].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[1].Type, liquid_event.Parameters[1].Type)
 	}
-	if event.Parameters[2].Name != vertex_event.Parameters[2].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[2].Name, vertex_event.Parameters[2].Name)
+	if event.Parameters[2].Name != liquid_event.Parameters[2].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[2].Name, liquid_event.Parameters[2].Name)
 	}
-	if event.Parameters[2].Type != vertex_event.Parameters[2].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, vertex_event.Parameters[2].Type)
+	if event.Parameters[2].Type != liquid_event.Parameters[2].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, liquid_event.Parameters[2].Type)
 	}
 }
 
@@ -191,7 +191,7 @@ func TestToken(t *testing.T) {
 
 func TestParseRustEvent(t *testing.T) {
 	event := parseRustFunction("fn Transfer(from: address, to: address, amount: u64) -> Event;")
-	vertex_event := Function{
+	liquid_event := Function{
 		Name: "Transfer",
 		Parameters: []Parameter{
 			Parameter{
@@ -208,26 +208,26 @@ func TestParseRustEvent(t *testing.T) {
 			},
 		},
 	}
-	if event.Name != vertex_event.Name {
-		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, vertex_event.Name)
+	if event.Name != liquid_event.Name {
+		t.Errorf("event was incorrect name, got: %s, want: %s.", event.Name, liquid_event.Name)
 	}
-	if event.Parameters[0].Name != vertex_event.Parameters[0].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, vertex_event.Parameters[0].Name)
+	if event.Parameters[0].Name != liquid_event.Parameters[0].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[0].Name, liquid_event.Parameters[0].Name)
 	}
-	if event.Parameters[0].Type != vertex_event.Parameters[0].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, vertex_event.Parameters[0].Type)
+	if event.Parameters[0].Type != liquid_event.Parameters[0].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[0].Type, liquid_event.Parameters[0].Type)
 	}
-	if event.Parameters[1].Name != vertex_event.Parameters[1].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[1].Name, vertex_event.Parameters[1].Name)
+	if event.Parameters[1].Name != liquid_event.Parameters[1].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[1].Name, liquid_event.Parameters[1].Name)
 	}
-	if event.Parameters[1].Type != vertex_event.Parameters[1].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[1].Type, vertex_event.Parameters[1].Type)
+	if event.Parameters[1].Type != liquid_event.Parameters[1].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[1].Type, liquid_event.Parameters[1].Type)
 	}
-	if event.Parameters[2].Name != vertex_event.Parameters[2].Name {
-		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[2].Name, vertex_event.Parameters[2].Name)
+	if event.Parameters[2].Name != liquid_event.Parameters[2].Name {
+		t.Errorf("event was incorrect parameter type name, got: %s, want: %s.", event.Parameters[2].Name, liquid_event.Parameters[2].Name)
 	}
-	if event.Parameters[2].Type != vertex_event.Parameters[2].Type {
-		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, vertex_event.Parameters[2].Type)
+	if event.Parameters[2].Type != liquid_event.Parameters[2].Type {
+		t.Errorf("event was incorrect parameter type, got: %s, want: %s.", event.Parameters[2].Type, liquid_event.Parameters[2].Type)
 	}
 	event = parseRustFunction("fn ArrayTest(from: &[u8]) -> Event;")
 	if event.Name != "ArrayTest" {
@@ -244,7 +244,7 @@ func TestParseRustEvent(t *testing.T) {
 
 func TestParseRustFunction(t *testing.T) {
 	function := parseRustFunction("fn add(x: i32, y: &[f32], z: address, t:u32) { ")
-	vertex_function := Function{
+	liquid_function := Function{
 		Name: "add",
 		Parameters: []Parameter{
 			Parameter{
@@ -261,29 +261,29 @@ func TestParseRustFunction(t *testing.T) {
 			},
 		},
 	}
-	if function.Name != vertex_function.Name {
-		t.Errorf("function was incorrect name, got: %s, want: %s.", function.Name, vertex_function.Name)
+	if function.Name != liquid_function.Name {
+		t.Errorf("function was incorrect name, got: %s, want: %s.", function.Name, liquid_function.Name)
 	}
-	if function.Parameters[0].Type != vertex_function.Parameters[0].Type {
-		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, vertex_function.Parameters[0].Type)
+	if function.Parameters[0].Type != liquid_function.Parameters[0].Type {
+		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, liquid_function.Parameters[0].Type)
 	}
 	// if function.Parameters[0].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
 	// }
-	if function.Parameters[1].Type != vertex_function.Parameters[1].Type {
-		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, vertex_function.Parameters[1].Type)
+	if function.Parameters[1].Type != liquid_function.Parameters[1].Type {
+		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, liquid_function.Parameters[1].Type)
 	}
 	// if !function.Parameters[1].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
 	// }
-	if function.Parameters[2].Type != vertex_function.Parameters[2].Type {
-		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, vertex_function.Parameters[2].Type)
+	if function.Parameters[2].Type != liquid_function.Parameters[2].Type {
+		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, liquid_function.Parameters[2].Type)
 	}
 	// if function.Parameters[2].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
 	// }
-	if function.Parameters[3].Type != vertex_function.Parameters[3].Type {
-		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, vertex_function.Parameters[3].Type)
+	if function.Parameters[3].Type != liquid_function.Parameters[3].Type {
+		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, liquid_function.Parameters[3].Type)
 	}
 	// if function.Parameters[3].IsArray {
 	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
