@@ -56,7 +56,7 @@ func TestCheckAllowEvent(t *testing.T) {
 	}
 }
 func TestGetImportFunctions(t *testing.T) {
-	import_function := getImportFunction("./tests/vertex_contract.wasm")
+	import_function := getImportFunction("./tests/liquid_contract.wasm")
 	if !(import_function[0] == "chain_get_caller") {
 		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}
@@ -81,7 +81,7 @@ func TestGetImportFunctions(t *testing.T) {
 }
 
 func TestGetExportFunctions(t *testing.T) {
-	export_function := getExportFunction("./tests/vertex_contract.wasm")
+	export_function := getExportFunction("./tests/liquid_contract.wasm")
 	if !(export_function[3] == "set_owner") {
 		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}
@@ -109,11 +109,11 @@ func TestGetExportFunctions(t *testing.T) {
 }
 
 func TestCheckImportFunctions(t *testing.T) {
-	check := CheckImportFunction("./tests/vertex_contract.wasm", []string{"Mint", "Transfer"})
+	check := CheckImportFunction("./tests/liquid_contract.wasm", []string{"Mint", "Transfer"})
 	if !check {
 		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}
-	check = CheckImportFunction("./tests/vertex_contract.wasm", []string{"Mint"})
+	check = CheckImportFunction("./tests/liquid_contract.wasm", []string{"Mint"})
 	if !check {
 		t.Errorf("funtion was not found, got: %t, want: %t.", false, true)
 	}

@@ -1,12 +1,12 @@
 [package]
-name = "vertex-lib"
-version = "0.1.4"
+name = "liquid-chain"
+version = "0.1.0"
 authors = ["dangquan-quoine <quan.nguyen.dang@quoine.com>"]
 edition = "2018"
-description = "vertex library for smart contract"
+description = "liquid library for smart contract"
 license = "MIT"
 homepage = "https://liquid.com"
-documentation = "https://github.com/QuoineFinancial/vertex-sdk/vertex-cdt"
+documentation = "https://github.com/QuoineFinancial/liquid-chain-sdk"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

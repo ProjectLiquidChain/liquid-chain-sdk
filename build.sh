@@ -50,11 +50,11 @@ build_mac () {
             rustup target add wasm32-wasi
             rustup update nightly
         fi
-        # install vertex-cdt
-        cd vertex-cdt && ./build.sh
-        if [ ! -f "/usr/local/bin/vertex-cdt" ]
+        # install liquid-cdt
+        cd liquid-cdt && ./build.sh
+        if [ ! -f "/usr/local/bin/liquid-cdt" ]
         then
-            echo "build vertex-cdt fail, please check go version"
+            echo "build liquid-cdt fail, please check go version"
         else
             echo "Build successful ! "
         fi

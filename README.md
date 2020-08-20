@@ -1,31 +1,30 @@
-# Vertex-sdk
-## Install vertex-sdk from source code
+# liquid-sdk
+## Install liquid-sdk from source code
 ### Clone project
 ```bash
-git clone --recursive https://github.com/QuoineFinancial/vertex-sdk
+git clone --recursive https://github.com/QuoineFinancial/liquid-chain-sdk
 ```
-### Build Tool
-#### MacOS
+### Build Tool (MacOS)
 build tools to support C, C++, rust language (require install golang > 1.12)
 ```bash
 ./build.sh
 ```
-usage for vertex tools
+usage for liquid tools
 ```bash
-vertex-cdt --help
+liquid-cdt --help
 ```
 ```bash
 NAME:
-   smart contract development CLI - vertex-cdt [language option] compile [file]
+   smart contract development CLI - liquid-cdt [language option] compile [file]
 
 USAGE:
-   vertex-cdt [global options] command [command options] [arguments...]
+   liquid-cdt [global options] command [command options] [arguments...]
 
 VERSION:
    0.0.1
 
 AUTHOR:
-   vertex team
+   liquid team
 
 COMMANDS:
    compile  compile c,c++ language file
@@ -39,20 +38,20 @@ GLOBAL OPTIONS:
 ### Compile to WebAssembly
 C language
 ```bash
-vertex-cdt compile <file .c> --export-function (-f) <functions name>
+liquid-cdt compile <file .c> --export-function (-f) <functions name>
 ```
  C++ language
 ```bash
-vertex-cdt compile <file .cpp> --export-function (-f) <functions name>
+liquid-cdt compile <file .cpp> --export-function (-f) <functions name>
 ```
 rust language
 ```bash
-vertex-cdt build <path folder project>
+liquid-cdt build <path folder project>
 ```
 ### Create first project in rust language
 create new project
 ```bash
-vertex-cdt init --name <name_of_project>
+liquid-cdt init --name <name_of_project>
 ```
 example code in lib.rs :
 ```rust
@@ -63,12 +62,12 @@ pub extern fn add(x: u32, y: u32) -> u32 {
 ```
 compile the project to WebAssembly
 ```bash
-vertex-cdt build <name_of_project>
+liquid-cdt build <name_of_project>
 ```
 ### Create first project in C,C++ language
 code demo in c demo.c
 ```c
-#include <vertex.h>
+#include <liquid.h>
 Event Add(int num1, int num2);
 Event Call(address x);
 int sum(int num1, int num2){
@@ -79,11 +78,11 @@ int sum(int num1, int num2){
 ```
 compile demo.c
 ```bash
-vertex-cdt compile demo.c --export-function sum
+liquid-cdt compile demo.c --export-function sum
 ```
 code demo in c++ demo.cpp
 ```c++
-#include <vertex.h>
+#include <liquid.h>
 WASI_EXPORT Event Add(int num1, int num2);
 WASI_EXPORT int sum(int num1, int num2){
    int num3 = num1+num2;
@@ -93,5 +92,5 @@ WASI_EXPORT int sum(int num1, int num2){
 ```
 compile demo.cpp
 ```bash
-vertex-cdt compile demo.cpp --export-function sum
+liquid-cdt compile demo.cpp --export-function sum
 ```
