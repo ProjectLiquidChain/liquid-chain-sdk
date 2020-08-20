@@ -83,27 +83,19 @@ func TestParseFunction(t *testing.T) {
 	if function.Parameters[0].Type != liquid_function.Parameters[0].Type {
 		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, liquid_function.Parameters[0].Type)
 	}
-	// if function.Parameters[0].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
-	// }
+
 	if function.Parameters[1].Type != liquid_function.Parameters[1].Type {
 		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, liquid_function.Parameters[1].Type)
 	}
-	// if !function.Parameters[1].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
-	// }
+
 	if function.Parameters[2].Type != liquid_function.Parameters[2].Type {
 		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, liquid_function.Parameters[2].Type)
 	}
-	// if function.Parameters[2].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
-	// }
+
 	if function.Parameters[3].Type != liquid_function.Parameters[3].Type {
 		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, liquid_function.Parameters[3].Type)
 	}
-	// if function.Parameters[3].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
-	// }
+
 }
 func TestParseEvent(t *testing.T) {
 	params := []Cparam{
@@ -267,27 +259,19 @@ func TestParseRustFunction(t *testing.T) {
 	if function.Parameters[0].Type != liquid_function.Parameters[0].Type {
 		t.Errorf("function was incorrect parameter type index 0 , got: %s, want: %s.", function.Parameters[0].Type, liquid_function.Parameters[0].Type)
 	}
-	// if function.Parameters[0].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 0, got: %t, want: %t.", function.Parameters[0].IsArray, false)
-	// }
+
 	if function.Parameters[1].Type != liquid_function.Parameters[1].Type {
 		t.Errorf("function was incorrect parameter type index 1 , got: %s, want: %s.", function.Parameters[1].Type, liquid_function.Parameters[1].Type)
 	}
-	// if !function.Parameters[1].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 1, got: %t, want: %t.", function.Parameters[1].IsArray, true)
-	// }
+
 	if function.Parameters[2].Type != liquid_function.Parameters[2].Type {
 		t.Errorf("function was incorrect parameter type index 2 , got: %s, want: %s.", function.Parameters[2].Type, liquid_function.Parameters[2].Type)
 	}
-	// if function.Parameters[2].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[2].IsArray, false)
-	// }
+
 	if function.Parameters[3].Type != liquid_function.Parameters[3].Type {
 		t.Errorf("function was incorrect parameter type index 3 , got: %s, want: %s.", function.Parameters[3].Type, liquid_function.Parameters[3].Type)
 	}
-	// if function.Parameters[3].IsArray {
-	// 	// t.Errorf("function was incorrect parameter array index 2, got: %t, want: %t.", function.Parameters[3].IsArray, false)
-	// }
+
 }
 
 func TestParse(t *testing.T) {
