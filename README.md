@@ -2,10 +2,9 @@
 ## Install liquid-sdk from source code
 ### Clone project
 ```bash
-git clone --recursive https://github.com/QuoineFinancial/liquid-sdk
+git clone --recursive https://github.com/QuoineFinancial/liquid-chain-sdk
 ```
-### Build Tool
-#### MacOS
+### Build Tool (MacOS)
 build tools to support C, C++, rust language (require install golang > 1.12)
 ```bash
 ./build.sh
