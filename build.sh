@@ -22,7 +22,7 @@ build_mac () {
     cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/
     rm -rf ./wasi-sdk-7.0
     # install llvm, require llvm version 9
-    if [ ! -d "/usr/local/opt/llvm/" ]
+    if [ ! -d "/usr/local/opt/llvm@9/" ]
     then
         echo "llvm DOES NOT exists, install llvm: "
         brew install llvm@9
@@ -31,7 +31,7 @@ build_mac () {
     cd c2ffi/
     mkdir build
     cd build/
-    LLVM_DIR=/usr/local/opt/llvm/ cmake ..
+    LLVM_DIR=/usr/local/opt/llvm@9/ cmake ..
     make
     mv ./bin/c2ffi /usr/local/bin
     if [ ! -f "/usr/local/bin/c2ffi" ]
@@ -79,13 +79,19 @@ build_linux() {
     if [ ! -d "/usr/local/opt/llvm/" ]
     then
         echo "llvm DOES NOT exists, install llvm: "
-        apt-get install -y llvm-9
+        apt-get install -y llvm-9 libllvm-9-ocaml-dev libllvm9 llvm-9-dev llvm-9-doc llvm-9-examples llvm-9-runtime 
+        apt-get install clang-9 clang-tools-9 clang-9-doc libclang-common-9-dev libclang-9-dev libclang1-9 clang-format-9 python-clang-9 clangd-9
+        apt-get install libfuzzer-9-dev
+        apt-get install lldb-9
+        apt-get install lld-9
+        apt-get install libc++-9-dev libc++abi-9-dev
+        apt-get install libomp-9-dev
     fi
     # install c2ffi tool to support generate ABI from c, c++ langiage
     cd c2ffi/
     mkdir build
     cd build/
-    LLVM_DIR=/usr/local/opt/llvm/ cmake ..
+    cmake ..
     make
     mv ./bin/c2ffi /usr/local/bin
     if [ ! -f "/usr/local/bin/c2ffi" ]
