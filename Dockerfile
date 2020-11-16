@@ -26,12 +26,15 @@ COPY .  /usr/liquid-chain-sdk/
 WORKDIR /usr/liquid-chain-sdk
 RUN unzip wasi-sdk-7.0.zip
 RUN cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-7.0
+# install rust 
+# RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env 
+# RUN  rustup -y target add wasm32-wasi && rustup -y update nightly
 # install c2ffi 
 RUN cd c2ffi \
  && mkdir build \
  && cd build \
  && cmake .. \
- && make -j4 VERBOSE=1
+ && make
 # install go lang 
 RUN apt-get install -y golang
 RUN mv c2ffi/build/bin/c2ffi /usr/local/bin/
