@@ -78,6 +78,7 @@ build_linux() {
     # install llvm, require llvm version 9
     if [ ! -d "/usr/local/opt/llvm/" ]
     then
+        # install dev package llvm and clang
         echo "llvm DOES NOT exists, install llvm: "
         apt-get install -y llvm-9 libllvm-9-ocaml-dev libllvm9 llvm-9-dev llvm-9-doc llvm-9-examples llvm-9-runtime 
         apt-get install clang-9 clang-tools-9 clang-9-doc libclang-common-9-dev libclang-9-dev libclang1-9 clang-format-9 python-clang-9 clangd-9
