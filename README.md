@@ -4,14 +4,22 @@
 ```bash
 git clone --recursive https://github.com/QuoineFinancial/liquid-chain-sdk
 ```
-### Build Tool (MacOS)
+### Build Tool (MacOS and Ubuntu)
 build tools to support C, C++, rust language (require install golang > 1.12)
 ```bash
 ./build.sh
 ```
+### Build with docker 
+```bash
+make build
+```
 usage for liquid tools
 ```bash
 liquid-cdt --help
+```
+usage for docker
+```bash
+docker run -it liquid-cdt  /bin/bash
 ```
 ```bash
 NAME:
