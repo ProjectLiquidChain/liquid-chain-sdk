@@ -17,6 +17,7 @@ RUN apt-get update -y \
     libomp-9-dev \
     cmake \
     build-essential \
+    libncurses5 \
     git \ 
     unzip \
     curl 
@@ -24,8 +25,8 @@ RUN apt-get update -y \
 RUN mkdir /usr/liquid-chain-sdk
 COPY .  /usr/liquid-chain-sdk/
 WORKDIR /usr/liquid-chain-sdk
-RUN unzip wasi-sdk-7.0.zip
-RUN cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-7.0
+RUN unzip wasi-sdk-ubuntu-9.0.zip
+RUN cp -r ./wasi-sdk-ubuntu-9.0/opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-ubuntu-9.0
 # install rust 
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env 
 # RUN  rustup -y target add wasm32-wasi && rustup -y update nightly
