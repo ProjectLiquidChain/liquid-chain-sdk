@@ -27,7 +27,6 @@ COPY .  /usr/liquid-chain-sdk/
 WORKDIR /usr/liquid-chain-sdk
 RUN unzip wasi-sdk-ubuntu-9.0.zip
 RUN cp -r ./wasi-sdk-ubuntu-9.0/opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-ubuntu-9.0
-RUN cp -a  /usr/local/opt/wasi-sdk/share/wasi-sysroot/include/. /usr/lib/clang/9.0.1/include/
 # install rust 
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env 
 # RUN  rustup -y target add wasm32-wasi && rustup -y update nightly
@@ -41,3 +40,4 @@ RUN cd c2ffi \
 RUN apt-get install -y golang
 RUN mv c2ffi/build/bin/c2ffi /usr/local/bin/
 RUN cd liquid-cdt && ./build.sh
+RUN cp -a  /usr/local/opt/wasi-sdk/share/wasi-sysroot/include/. /usr/lib/clang/9.0.1/include/
