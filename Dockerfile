@@ -4,7 +4,7 @@ FROM ubuntu:groovy
 MAINTAINER Quan Nguyen
 ENV GO12MODULE=on
 
-RUN apt-get -y update && apt-get -y upgrade
+# RUN apt-get -y update && apt-get -y upgrade
 
 #Utilities install llvm and clang
 RUN apt-get update -y \
@@ -20,13 +20,16 @@ RUN apt-get update -y \
     libncurses5 \
     git \ 
     unzip \
-    curl 
+    curl \
+    wget \
+    tar
 
 RUN mkdir /usr/liquid-chain-sdk
 COPY .  /usr/liquid-chain-sdk/
 WORKDIR /usr/liquid-chain-sdk
-RUN unzip wasi-sdk-ubuntu-9.0.zip
-RUN cp -r ./wasi-sdk-ubuntu-9.0/opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-ubuntu-9.0
+RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-9/wasi-sdk-9.0-ubuntu18.04.tar.gz
+RUN tar xvzf wasi-sdk-9.0-ubuntu18.04.tar.gz
+RUN mkdir opt && cp -R ./wasi-sdk-9.0/ ./opt/wasi-sdk && cp -r ./opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-9.0
 # install rust 
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env 
 # RUN  rustup -y target add wasm32-wasi && rustup -y update nightly

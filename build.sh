@@ -22,7 +22,7 @@ build_mac () {
     cp -r ./wasi-sdk-7.0/opt/ /usr/local/opt/
     rm -rf ./wasi-sdk-7.0
     # install llvm, require llvm version 9
-    if [ ! -d "/usr/local/opt/llvm@9/" ]
+    if [ ! -d "/usr/local/opt/llvm@9/" ] | [! -d "/usr/local/opt/llvm/"] 
     then
         echo "llvm DOES NOT exists, install llvm: "
         brew install llvm@9
