@@ -27,9 +27,9 @@ RUN apt-get update -y \
 RUN mkdir /usr/liquid-chain-sdk
 COPY .  /usr/liquid-chain-sdk/
 WORKDIR /usr/liquid-chain-sdk
-RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-9/wasi-sdk-9.0-ubuntu18.04.tar.gz
-RUN tar xvzf wasi-sdk-9.0-ubuntu18.04.tar.gz
-RUN mkdir opt && cp -R ./wasi-sdk-9.0/ ./opt/wasi-sdk && cp -r ./opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-9.0
+RUN wget https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-12/wasi-sdk-12.0-linux.tar.gz
+RUN tar xvzf wasi-sdk-12.0-linux.tar.gz
+RUN mkdir opt && cp -R ./wasi-sdk-12.0/ ./opt/wasi-sdk && cp -r ./opt/ /usr/local/opt/ && rm -rf ./wasi-sdk-12.0
 # install rust 
 # RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh && source $HOME/.cargo/env 
 # RUN  rustup -y target add wasm32-wasi && rustup -y update nightly
