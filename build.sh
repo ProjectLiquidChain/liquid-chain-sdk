@@ -5,13 +5,10 @@ build_mac () {
         echo "cmake not exits"
         brew install cmake
     fi
-    if [ ! -d "/usr/local/Cellar/unzip" ]
+    if [ ! -d "./wasi-sdk-7.0" ]
     then
-        echo "unzip not exits"
-        brew install unzip
+        sh fetch-wasi.sh
     fi
-    # unzip and install wasi-sdk
-    unzip wasi-sdk-7.0.zip
 
     if [ -d "/usr/local/opt/wasi-sdk/" ]
     then
