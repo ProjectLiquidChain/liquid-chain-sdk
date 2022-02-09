@@ -4,12 +4,16 @@
 ```bash
 git clone --recursive https://github.com/QuoineFinancial/liquid-chain-sdk
 ```
-### Build Tool (MacOS)
+### Build Tool (MacOS and Ubuntu)
 build tools to support C, C++, rust language (require install golang > 1.12)
 ```bash
 ./build.sh
 ```
-usage for liquid tools
+### Build with docker 
+```bash
+make build
+```
+### usage for liquid tools
 ```bash
 liquid-cdt --help
 ```
@@ -35,7 +39,7 @@ GLOBAL OPTIONS:
    --help, -h     show help
    --version, -v  print the version
 ```
-### Compile to WebAssembly
+#### Compile to WebAssembly with tool
 C language
 ```bash
 liquid-cdt compile <file .c> --export-function (-f) <functions name>
@@ -47,6 +51,15 @@ liquid-cdt compile <file .cpp> --export-function (-f) <functions name>
 rust language
 ```bash
 liquid-cdt build <path folder project>
+```
+#### Compile to WebAssembly with tool docker
+config path of project
+```bash
+./start.sh <path of project>
+```
+compile project 
+```bash
+liquid-compile <file.c> <functions name>
 ```
 ### Create first project in rust language
 create new project
